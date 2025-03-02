@@ -38,7 +38,7 @@ namespace IT15_TripoleMedelTijol.Data
         {
             base.OnModelCreating(builder);
 
-            // Set EmployeeID as unique
+            // Set EmployeeID as unique to prevent duplicates
             builder.Entity<Employee>()
                 .HasIndex(e => e.EmployeeID)
                 .IsUnique();
@@ -50,28 +50,36 @@ namespace IT15_TripoleMedelTijol.Data
                 .HasForeignKey(s => s.EmployeeID) // Foreign key in Salary table
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
 
-            // Ensure Salary Amount has correct precision
+            // Ensure the Salary Amount column has correct precision for decimal values
             builder.Entity<Salary>()
                 .Property(s => s.Amount)
                 .HasColumnType("decimal(18,2)");
 
-            // If UserId exists, maintain FK
+            // Configure one-to-one relationship between Employee and ApplicationUser
             builder.Entity<Employee>()
-                .HasOne<ApplicationUser>()
-                .WithOne()
-                .HasForeignKey<Employee>(e => e.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasOne<ApplicationUser>() // An Employee is linked to an ApplicationUser (identity user)
+                .WithOne()  // One-to-one relationship
+                .HasForeignKey<Employee>(e => e.UserId) // Employee table holds the UserId as a foreign key
+                .OnDelete(DeleteBehavior.Cascade); // If the user is deleted, delete the corresponding Employee record
 
-            // Configure relationships
+            // Configure JobPosting relationship with Department (Many-to-One)
             builder.Entity<JobPosting>()
-                .HasOne(jp => jp.Department)
-                .WithMany()
-                .HasForeignKey(jp => jp.DepartmentId);
+                .HasOne(jp => jp.Department) // A JobPosting belongs to one Department
+                .WithMany() // A Department can have multiple JobPostings
+                .HasForeignKey(jp => jp.DepartmentId); // Foreign key in JobPosting table
 
+            // Configure JobPosting relationship with JobTitle (Many-to-One)
             builder.Entity<JobPosting>()
-                .HasOne(jp => jp.JobTitle)
-                .WithMany()
-                .HasForeignKey(jp => jp.JobTitleId);
+                .HasOne(jp => jp.JobTitle) // A JobPosting belongs to one JobTitle
+                .WithMany() // A JobTitle can have multiple JobPostings
+                .HasForeignKey(jp => jp.JobTitleId); // Foreign key in JobPosting table
+
+            // Configure JobTitle relationship with Employee (One-to-One)
+            builder.Entity<JobTitle>()
+                .HasOne<Employee>(jt => jt.Employee) // A JobTitle is optionally held by one Employee
+                .WithOne(e => e.JobTitle) // An Employee holds one JobTitle
+                .HasForeignKey<JobTitle>(jt => jt.EmployeeId) // JobTitle table has the EmployeeId
+                .OnDelete(DeleteBehavior.SetNull); // If the Employee is deleted, set EmployeeId to NULL in JobTitle (position becomes vacant)
         }
     }
 }

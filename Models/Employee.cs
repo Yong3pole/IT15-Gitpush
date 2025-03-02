@@ -16,33 +16,40 @@ namespace IT15_TripoleMedelTijol.Models
         public Applicant? Applicant { get; set; } // Navigation Property
 
         [ForeignKey("ApplicationUser")]
-        public string? UserId { get; set; } // FK to AspNetUsers.Id (Nullable)
+        public string? UserId { get; set; } // FK to AspNetUsers.Id (Nullable), only selected Job Titles will be given access to HRMS
 
         // Personal Information
         [Required]
-        [StringLength(50)]
         public string FirstName { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(50)]
         public string LastName { get; set; } = string.Empty;
 
-        public DateTime? DateOfBirth { get; set; }
+        public string FullName => $"{FirstName} {LastName}";
 
         [Required]
         [RegularExpression("Male|Female", ErrorMessage = "Gender must be 'Male' or 'Female'.")]
         public required string Gender { get; set; }
 
-        // Contact Information
-        [EmailAddress]
-        public string? Email { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
-        [Phone]
-        public string? PhoneNumber { get; set; }
+        // Contact Information
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [RegularExpression(@"^(09\d{9}|\+63\d{10})$", ErrorMessage = "Phone number must be in the format 09XXXXXXXXX or +63XXXXXXXXXX.")]
+        public string Phone { get; set; } = string.Empty;
 
         // Address Details
         [StringLength(100)]
-        public string Address { get; set; } = string.Empty;
+        public string? HouseNumber { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        public string Street { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        public string Barangay { get; set; } = string.Empty;
 
         [StringLength(50)]
         public string City { get; set; } = string.Empty;
@@ -50,22 +57,24 @@ namespace IT15_TripoleMedelTijol.Models
         [StringLength(50)]
         public string Province { get; set; } = string.Empty;
 
-        [RegularExpression(@"^\d{5}(-\d{4})?$")]
+        [RegularExpression(@"^\d{4}$", ErrorMessage = "Zip Code must be 4 digits.")]
         public string ZipCode { get; set; } = string.Empty;
+
+        public string CompleteAddress =>
+            $"{(string.IsNullOrWhiteSpace(HouseNumber) ? "" : HouseNumber + " ")}{Street}, {Barangay}, {City}, {Province} {ZipCode}".Trim();
 
         // Job Details
         [ForeignKey("JobTitle")]
         public int JobTitleId { get; set; }
 
-        public JobTitle JobTitle { get; set; }
+        public required JobTitle JobTitle { get; set; }
 
         [ForeignKey("Department")]
         public int DepartmentId { get; set; }
 
-        public Department Department { get; set; }
+        public required Department Department { get; set; }
 
         public string? ResumePath { get; set; }
-
 
         public DateTime DateHired { get; set; } = DateTime.Now;
 
@@ -77,7 +86,7 @@ namespace IT15_TripoleMedelTijol.Models
         [StringLength(50)]
         public string EmergencyContactName { get; set; } = string.Empty;
 
-        [StringLength(15)]
+        [StringLength(11)]
         public string EmergencyContactPhone { get; set; } = string.Empty;
 
         [StringLength(50)]
@@ -85,7 +94,5 @@ namespace IT15_TripoleMedelTijol.Models
 
         // Navigation property for Salary
         public ICollection<Salary> Salaries { get; set; } = new List<Salary>();
-
-        public string FullName => $"{FirstName} {LastName}";
     }
 }

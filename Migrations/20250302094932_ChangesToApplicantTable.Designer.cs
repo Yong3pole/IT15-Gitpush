@@ -4,6 +4,7 @@ using IT15_TripoleMedelTijol.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IT15_TripoleMedelTijol.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250302094932_ChangesToApplicantTable")]
+    partial class ChangesToApplicantTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -219,13 +222,13 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.Property<string>("EmployeeID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("ApplicantID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Barangay")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("ApplicantID")
+                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -242,7 +245,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmergencyContactName")
@@ -265,26 +267,25 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HouseNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("JobTitleId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Phone")
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<string>("Province")
                         .IsRequired()
@@ -296,11 +297,6 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.Property<string>("ResumePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -317,6 +313,8 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasIndex("EmployeeID")
                         .IsUnique();
+
+                    b.HasIndex("JobTitleId");
 
                     b.HasIndex("UserId")
                         .IsUnique()
@@ -340,8 +338,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("HiredApplicantID")
                         .HasColumnType("int");
@@ -380,12 +377,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmployeeId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool?>("IsFilled")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -393,10 +384,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.HasKey("JobTitleId");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique()
-                        .HasFilter("[EmployeeId] IS NOT NULL");
 
                     b.ToTable("JobTitles");
                 });
@@ -630,6 +617,12 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("IT15_TripoleMedelTijol.Models.JobTitle", "JobTitle")
+                        .WithMany()
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("IT15_TripoleMedelTijol.Models.ApplicationUser", null)
                         .WithOne()
                         .HasForeignKey("IT15_TripoleMedelTijol.Models.Employee", "UserId")
@@ -638,6 +631,8 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.Navigation("Applicant");
 
                     b.Navigation("Department");
+
+                    b.Navigation("JobTitle");
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.JobPosting", b =>
@@ -667,14 +662,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IT15_TripoleMedelTijol.Models.Employee", "Employee")
-                        .WithOne("JobTitle")
-                        .HasForeignKey("IT15_TripoleMedelTijol.Models.JobTitle", "EmployeeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Department");
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Performance", b =>
@@ -752,9 +740,6 @@ namespace IT15_TripoleMedelTijol.Migrations
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Employee", b =>
                 {
-                    b.Navigation("JobTitle")
-                        .IsRequired();
-
                     b.Navigation("Salaries");
                 });
 

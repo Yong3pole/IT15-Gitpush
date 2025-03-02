@@ -156,7 +156,9 @@
         document.getElementById('EditJobID').value = jobID;
         document.getElementById('EditTitle').value = jobTitleName;
         document.getElementById('EditDepartment').value = departmentName;
-        document.getElementById('EditDescription').value = description;
+        // Fix for preserving new lines
+        document.getElementById('EditDescription').value = description.replace(/\\n/g, "\n");
+
         document.getElementById('EditSalaryRange').value = salaryRange;
         document.getElementById('EditStatus').value = status;
 

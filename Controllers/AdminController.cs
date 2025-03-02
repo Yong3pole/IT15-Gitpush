@@ -32,12 +32,6 @@ namespace IT15_TripoleMedelTijol.Controllers
             return View();
         }
 
-        // View Employees from the Employees table
-        public async Task<IActionResult> EmployeeManagement()
-        {
-            var employees = await _context.Employees.ToListAsync();
-            return View(employees);
-        }
 
         // View Employee details in UserManagement page
         public async Task<IActionResult> GetEmployeeDetails(string id)
@@ -95,25 +89,31 @@ namespace IT15_TripoleMedelTijol.Controllers
                 return RedirectToAction("Applicants", "Admin");
             }
 
+            // Validate and save resume file
             if (ResumeFile != null && ResumeFile.Length > 0)
             {
-                // Generate a unique file name
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ResumeFile.FileName);
+                var allowedExtensions = new[] { ".pdf" };
+                var fileExtension = Path.GetExtension(ResumeFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    TempData["ErrorMessage"] = "Only PDF resumes are allowed.";
+                    return RedirectToAction("Applicants", "Admin");
+                }
+
+                var fileName = Guid.NewGuid().ToString() + fileExtension;
                 var filePath = Path.Combine("wwwroot/uploads/resumes", fileName);
+                Directory.CreateDirectory("wwwroot/uploads/resumes");
 
-                // Ensure the directory exists
-                Directory.CreateDirectory(Path.Combine("wwwroot/uploads/resumes"));
-
-                // Save the file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await ResumeFile.CopyToAsync(stream);
                 }
 
-                // Store the relative path in the database
                 applicant.ResumePath = "/uploads/resumes/" + fileName;
             }
 
+            // Ensure DateApplied is set
             applicant.DateApplied = DateTime.Now;
 
             _context.Applicants.Add(applicant);
@@ -122,6 +122,7 @@ namespace IT15_TripoleMedelTijol.Controllers
             TempData["SuccessMessage"] = "Applicant added successfully!";
             return RedirectToAction("Applicants", "Admin");
         }
+
 
 
         /////////////////////////////////// JOB POSTINGS //////////////////////////////////
@@ -187,6 +188,7 @@ namespace IT15_TripoleMedelTijol.Controllers
         }
 
         // Edit Job Posting
+
         [HttpPost]
         public IActionResult EditJob(JobPosting jobPosting)
         {
@@ -194,40 +196,71 @@ namespace IT15_TripoleMedelTijol.Controllers
             {
                 try
                 {
-                    var existingJob = _context.JobPostings.Find(jobPosting.JobID);
+                    var existingJob = _context.JobPostings
+                        .Where(j => j.JobID == jobPosting.JobID)
+                        .Select(j => new { j.JobID, j.JobTitleId, j.DepartmentId })
+                        .FirstOrDefault();
+
                     if (existingJob == null)
                     {
                         TempData["ErrorMessage"] = "Job posting not found.";
                         return RedirectToAction("JobPostings");
                     }
 
-                    // Update job posting fields
-                    existingJob.Status = jobPosting.Status;
+                    var jobTitle = _context.JobTitles.Find(existingJob.JobTitleId);
+                    var department = _context.Departments.Find(existingJob.DepartmentId);
 
-                    // If job status is "Closed" and a HiredApplicantID is selected
+                    if (jobTitle == null || department == null)
+                    {
+                        TempData["ErrorMessage"] = "Job Title or Department not found.";
+                        return RedirectToAction("JobPostings");
+                    }
+
+                    var jobToUpdate = _context.JobPostings.Find(jobPosting.JobID);
+                    jobToUpdate.Status = jobPosting.Status;
+
                     if (jobPosting.Status == "Closed" && jobPosting.HiredApplicantID.HasValue)
                     {
-                        existingJob.HiredApplicantID = jobPosting.HiredApplicantID;
+                        jobToUpdate.HiredApplicantID = jobPosting.HiredApplicantID;
 
-                        // Update the hired applicant's status to "Hired"
                         var hiredApplicant = _context.Applicants.Find(jobPosting.HiredApplicantID);
                         if (hiredApplicant != null)
                         {
                             hiredApplicant.Status = "Hired";
 
-                            // Store the hired applicant's details in TempData
-                            TempData["HiredApplicantFirstName"] = hiredApplicant.FirstName;
-                            TempData["HiredApplicantLastName"] = hiredApplicant.LastName;
-                            TempData["HiredApplicantEmail"] = hiredApplicant.Email;
-                            TempData["HiredApplicantPhone"] = hiredApplicant.Phone;
+                            var existingEmployee = _context.Employees
+                                .FirstOrDefault(e => e.ApplicantID == hiredApplicant.ApplicantID);
 
-                            // Set success message with the hired applicant's name
-                            TempData["SuccessMessage"] = $"This job posting is now closed, {hiredApplicant.FullName} has been hired.";
+                            if (existingEmployee == null)
+                            {
+                                var newEmployee = new Employee
+                                {
+                                    ApplicantID = hiredApplicant.ApplicantID,
+                                    FirstName = hiredApplicant.FirstName,
+                                    LastName = hiredApplicant.LastName,
+                                    Gender = hiredApplicant.Gender,
+                                    DateOfBirth = hiredApplicant.DateOfBirth,
+                                    Email = hiredApplicant.Email,
+                                    Phone = hiredApplicant.Phone,
+                                    HouseNumber = hiredApplicant.HouseNumber,
+                                    Street = hiredApplicant.Street,
+                                    Barangay = hiredApplicant.Barangay,
+                                    City = hiredApplicant.City,
+                                    Province = hiredApplicant.Province,
+                                    ZipCode = hiredApplicant.ZipCode,
+                                    ResumePath = hiredApplicant.ResumePath,
+                                    DateHired = DateTime.Now,
+                                    EmploymentStatus = true,
 
-                            // Save changes to the database
+                                    JobTitle = jobTitle,
+                                    Department = department
+                                };
+
+                                _context.Employees.Add(newEmployee);
+                            }
+
                             _context.SaveChanges();
-
-                            // Redirect to the Onboarding view
+                            TempData["SuccessMessage"] = $"{hiredApplicant.FullName} has been hired and added to Employees.";
                             return RedirectToAction("Onboarding", "Onboarding");
                         }
                         else
@@ -236,26 +269,23 @@ namespace IT15_TripoleMedelTijol.Controllers
                             return RedirectToAction("JobPostings");
                         }
                     }
-                    else
-                    {
-                        // Set success message for other status updates
-                        TempData["SuccessMessage"] = "Job posting updated successfully.";
-                        _context.SaveChanges();
-                        return RedirectToAction("JobPostings");
-                    }
+
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Job posting updated successfully.";
+                    return RedirectToAction("JobPostings");
                 }
                 catch (Exception ex)
                 {
-                    // Log the exception (ex) if needed
-                    TempData["ErrorMessage"] = "An error occurred while updating the job posting.";
+                    TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
                     return RedirectToAction("JobPostings");
                 }
             }
 
-            // If we got this far, something failed; redisplay the form
             TempData["ErrorMessage"] = "Invalid data submitted.";
             return RedirectToAction("JobPostings");
         }
+
+
 
         public IActionResult GetApplicantsByJobId(int jobId)
         {

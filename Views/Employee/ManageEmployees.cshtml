@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Manage Employees";
+}
+
+<h2>Manage Employees Page</h2>
+<p>Manage Employees Page</p>
+
+
+<div class="row">
+    <!-- Total Employees -->
+    <div class="col-md-6">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Employees</h5>
+                <p class="card-text display-4">@Model.TotalEmployees</p>
+                <a href="@Url.Action("ManageEmployees", "Employee")" class="btn btn-light">Manage</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Job Postings -->
+    <div class="col-md-6">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h5 class="card-title">Open Job Postings</h5>
+                <p class="card-text display-4">@Model.OpenJobPostings</p>
+                <a href="@Url.Action("JobPostings", "Job")" class="btn btn-light">View</a>
+            </div>
+        </div>
+    </div>
+</div>

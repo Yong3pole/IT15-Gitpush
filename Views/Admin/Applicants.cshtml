@@ -88,6 +88,7 @@
             </div>
             <div class="modal-body">
                 <form asp-action="AddApplicant" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                    <!-- Job Selection -->
                     <div class="mb-3">
                         <label class="form-label">Job Title</label>
                         <select class="form-control" name="JobID" required>
@@ -100,6 +101,8 @@
                             }
                         </select>
                     </div>
+
+                    <!-- Name Fields -->
                     <div class="mb-3">
                         <label class="form-label">First Name</label>
                         <input type="text" class="form-control" name="FirstName" required>
@@ -108,21 +111,70 @@
                         <label class="form-label">Last Name</label>
                         <input type="text" class="form-control" name="LastName" required>
                     </div>
+
+                    <!-- Gender -->
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <select class="form-control" name="Gender" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" name="DateOfBirth">
+                    </div>
+
+                    <!-- Contact Details -->
                     <div class="mb-3">
                         <label class="form-label">Email</label>
                         <input type="email" class="form-control" name="Email" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="Phone" required>
+                        <input type="text" class="form-control" name="Phone" pattern="^(09\d{9}|\+63\d{10})$" required>
                     </div>
+
+                    <!-- Address Details -->
+                    <h6>Address</h6>
+                    <div class="mb-3">
+                        <label class="form-label">House Number</label>
+                        <input type="text" class="form-control" name="HouseNumber">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Street</label>
+                        <input type="text" class="form-control" name="Street" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Barangay</label>
+                        <input type="text" class="form-control" name="Barangay" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" name="City" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Province</label>
+                        <input type="text" class="form-control" name="Province" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Zip Code</label>
+                        <input type="text" class="form-control" name="ZipCode" pattern="\d{4}" title="Enter a 4-digit zip code" required>
+                    </div>
+
+                    <!-- Resume Upload -->
                     <div class="mb-3">
                         <label class="form-label">Resume (PDF Only)</label>
                         <input type="file" class="form-control" name="ResumeFile" accept=".pdf" required>
                     </div>
+
+                    <!-- Submit Button -->
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+

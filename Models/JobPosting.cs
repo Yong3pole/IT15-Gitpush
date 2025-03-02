@@ -17,13 +17,14 @@ namespace IT15_TripoleMedelTijol.Models
         [ForeignKey("JobTitle")]
         public int JobTitleId { get; set; } // Foreign Key to JobTitle
 
+        [StringLength(100)]
         public string? Description { get; set; } // Optional: Job description
 
         [Required]
-        public string SalaryRange { get; set; } // Required: Salary range
+        public required string SalaryRange { get; set; } // Required: Salary range
 
         [Required]
-        public string Status { get; set; } // Required: Job status (e.g., "Open", "Closed", "Filled")
+        public required string Status { get; set; } // Required: Job status (e.g., "Open", "Closed", "Filled")
 
         public DateTime DatePosted { get; set; } // Date the job was posted
 
