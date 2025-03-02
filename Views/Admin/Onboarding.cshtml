@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Onboarding";
+}
+
+<h2>Onboarding</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Hired Applicant Details</h5>
+        <p class="card-text">
+            <strong>First Name:</strong> @ViewBag.HiredApplicantFirstName<br>
+            <strong>Last Name:</strong> @ViewBag.HiredApplicantLastName<br>
+            <strong>Email:</strong> @ViewBag.HiredApplicantEmail<br>
+            <strong>Phone:</strong> @ViewBag.HiredApplicantPhone
+        </p>
+    </div>
+</div>
+
+<!-- SweetAlert Script -->
+@section Scripts {
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '@TempData["SuccessMessage"]',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    }
+}

@@ -1,0 +1,60 @@
+﻿@model List<IT15_TripoleMedelTijol.Models.Applicant>
+
+@{
+    ViewData["Title"] = "Applicants";
+    var jobId = Context.Request.Query["jobId"].ToString();
+}
+
+<h2>
+    @if (!string.IsNullOrEmpty(jobId))
+    {
+        <span>Applicants for Job @jobId</span>
+    }
+    else
+    {
+        <span>All Applicants</span>
+    }
+</h2>
+
+<table class="table table-bordered mt-4">
+    <thead class="table-dark">
+        <tr>
+            <th>Applicant ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Job Applied</th>
+            <th>Status</th>
+            <th>Date Applied</th>
+            <th>Resume</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var applicant in Model)
+        {
+            <tr>
+                <td>@applicant.ApplicantID</td>
+                <td>@applicant.FullName</td>
+                <td>@applicant.Email</td>
+                <td>@applicant.Phone</td>
+                <td>@(applicant.JobPosting?.JobTitle?.Name ?? "N/A")</td>
+                <td>@applicant.Status</td>
+                <td>@applicant.DateApplied.ToString("yyyy-MM-dd")</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(applicant.ResumePath))
+                    {
+                        <a href="@Url.Content("~/uploads/resumes/" + applicant.ResumePath)" target="_blank">View Resume</a>
+                    }
+                    else
+                    {
+                        <span>No Resume</span>
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-info btn-sm">View</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

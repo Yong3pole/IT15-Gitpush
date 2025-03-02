@@ -1,0 +1,128 @@
+﻿@model List<IT15_TripoleMedelTijol.Models.Applicant>
+
+@{
+    ViewData["Title"] = "Applicants";
+}
+
+<h2>Applicants</h2>
+
+@section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var successMessage = "@TempData["SuccessMessage"]";
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: successMessage,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+}
+
+<!-- Add New Applicant Button -->
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addApplicantModal">
+    Add New Applicant
+</button>
+
+<!-- Applicants Table -->
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Job Applied</th>
+            <th>Resume</th>
+            <th>Status</th>
+            <th>Date Applied</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var applicant in Model)
+            {
+                <tr>
+                    <td>@applicant.ApplicantID</td>
+                    <td>@applicant.FullName</td>
+                    <td>@applicant.Email</td>
+                    <td>@applicant.Phone</td>
+                    <td>@(applicant.JobPosting?.JobTitle?.Name ?? "N/A")</td> <!-- ✅ Correct -->
+                    <td>
+                        @if (!string.IsNullOrEmpty(applicant.ResumePath))
+                        {
+                            <a href="@applicant.ResumePath" class="btn btn-sm btn-success" target="_blank">Download</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Resume</span>
+                        }
+                    </td>
+                    <td>@applicant.Status</td>
+                    <td>@applicant.DateApplied.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">No applicants found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Add Applicant Modal -->
+<div class="modal fade" id="addApplicantModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Applicant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddApplicant" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Job Title</label>
+                        <select class="form-control" name="JobID" required>
+                            <option value="">Select Job</option>
+                            @foreach (var job in ViewBag.JobPostings)
+                            {
+                                <option value="@job.JobID">
+                                    @(job.JobTitle != null ? job.JobTitle.Name : "No Job Title")
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="FirstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="LastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="Phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resume (PDF Only)</label>
+                        <input type="file" class="form-control" name="ResumeFile" accept=".pdf" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

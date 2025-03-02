@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h1 class="mt-4">Welcome, Admin @ViewData["FullName"]</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">User Management</div>
+                <div class="card-body">
+                    <h5 class="card-title">Manage Users</h5>
+                    <p class="card-text">Add, edit, or remove system users.</p>
+                    <a href="@Url.Action("UserManagement", "Admin")" class="btn btn-light">Go to Users</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Reports</div>
+                <div class="card-body">
+                    <h5 class="card-title">View Reports</h5>
+                    <p class="card-text">Check and user reports.</p>
+                    <a href="@Url.Action("Reports", "Admin")" class="btn btn-light">View Reports</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">System Settings</div>
+                <div class="card-body">
+                    <h5 class="card-title">Configure System</h5>
+                    <p class="card-text">Modify application settings.</p>
+                    <a href="@Url.Action("Settings", "Admin")" class="btn btn-light">Settings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

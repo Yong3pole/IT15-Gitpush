@@ -1,0 +1,94 @@
+﻿@model List<IT15_TripoleMedelTijol.Models.Employee>
+
+@{
+    ViewData["Title"] = "Employee Management";
+}
+
+<h2>Employee Management</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered mt-4" id="employeeTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Employee ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Department</th>
+                <th>Job Title</th>
+                <th>Employment Status</th>
+                <th>Work Email</th>
+                <th>Work Phone</th>
+                <th>Date Hired</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var emp in Model)
+            {
+                <tr>
+                    <td>@emp.EmployeeID</td>
+                    <td>@emp.FirstName</td>
+                    <td>@emp.LastName</td>
+                    <td>@emp.Department</td>
+                    <td>@emp.JobTitle</td>
+                    <td>@emp.EmploymentStatus</td>
+                    <td>@emp.Email</td>
+                    <td>@emp.PhoneNumber</td>
+                    <td>@(emp.DateHired.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="viewEmployee('@emp.EmployeeID')">View</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="employeeModalLabel">Employee Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="employeeDetails">
+                    <!-- Employee details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>No employees found.</p>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#employeeTable').DataTable({
+                paging: true, // Enable pagination
+                searching: true, // Enable search bar
+                ordering: true, // Enable sorting
+                responsive: true // Enable responsive design
+            });
+        });
+
+        // Function to view employee details
+        function viewEmployee(employeeId) {
+            fetch(`/Admin/GetEmployeeDetails?id=${employeeId}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('employeeDetails').innerHTML = data;
+                    new bootstrap.Modal(document.getElementById('employeeModal')).show();
+                })
+                .catch(error => console.error('Error fetching employee details:', error));
+        }
+    </script>
+}

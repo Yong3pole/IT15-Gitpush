@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h1 class="mt-4">Welcome to Your Dashboard, @ViewData["FullName"]</h1>
+    <div class="row mt-4">
+        <!-- Card 1: Clock In / Clock Out -->
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Work Attendance</div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">Clock In / Clock Out</h5>
+                    <p id="attendanceStatus" class="card-text">
+                        @if (ViewBag.Attendance == null)
+                        {
+                            <text>You have not logged attendance today.</text>
+                        }
+                        else
+                        {
+                            <text>Clocked In: @ViewBag.Attendance.ShiftStart.ToString("hh:mm tt")</text>
+                            @if (ViewBag.Attendance.ShiftEnd != null)
+                            {
+                                <text> | Clocked Out: @ViewBag.Attendance.ShiftEnd.ToString("hh:mm tt")</text>
+                            }
+                        }
+                    </p>
+                    <button id="clockInBtn" class="btn btn-light" onclick="clockIn()" @(ViewBag.Attendance?.ShiftStart != null ? "disabled" : "")>Clock In</button>
+                    <button id="clockOutBtn" class="btn btn-danger" onclick="clockOut()" @(ViewBag.Attendance?.ShiftEnd != null || ViewBag.Attendance?.ShiftStart == null ? "disabled" : "")>Clock Out</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">User Widget 2</div>
+                <div class="card-body">
+                    <h5 class="card-title">Widget 2</h5>
+                    <p class="card-text">Description for Widget 2.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">User Widget 3</div>
+                <div class="card-body">
+                    <h5 class="card-title">Widget 3</h5>
+                    <p class="card-text">Description for Widget 3.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function clockIn() {
+        fetch('/Attendance/ClockIn', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('attendanceStatus').innerText = "Clocked In: " + data.shiftStart;
+                    document.getElementById('clockInBtn').disabled = true;
+                    document.getElementById('clockOutBtn').disabled = false;
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+    }
+
+    function clockOut() {
+        fetch('/Attendance/ClockOut', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('attendanceStatus').innerText += " | Clocked Out: " + data.shiftEnd;
+                    document.getElementById('clockOutBtn').disabled = true;
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+    }
+</script>

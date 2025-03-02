@@ -1,0 +1,212 @@
+﻿@model List<IT15_TripoleMedelTijol.Models.JobPosting>
+
+@{
+    ViewData["Title"] = "Job Postings";
+}
+
+<h2>Job Postings</h2>
+
+<!-- Button to Open Add Job Modal -->
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addJobModal">
+    Add New Job Posting
+</button>
+
+<table class="table table-bordered mt-4">
+    <thead class="table-dark">
+        <tr>
+            <th>Job ID</th>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Salary Range</th>
+            <th>Status</th>
+            <th>Date Posted</th>
+            <th>Applicants</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.JobID</td>
+                <td>@job.JobTitle.Name</td>
+                <td>@job.Department.Name</td>
+                <td>@job.SalaryRange</td>
+                <td>@job.Status</td>
+                <td>@job.DatePosted.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    <!-- Link to Applicants page filtered by JobID -->
+                    <a href="@Url.Action("Applicants", "Admin", new { jobId = job.JobID })">
+                        @job.Applicants.Count Applicants
+                    </a>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editJobModal"
+                            onclick="loadEditForm('@job.JobID', '@job.JobTitle.Name', '@job.Description', '@job.Department.Name', '@job.SalaryRange', '@job.Status')">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Add Job Modal -->
+<div class="modal fade" id="addJobModal" tabindex="-1" aria-labelledby="addJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addJobModalLabel">Add New Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addJobForm" asp-action="AddJob" method="post">
+                    <div class="mb-3">
+                        <label for="DepartmentId" class="form-label">Department</label>
+                        <select class="form-control" id="DepartmentId" name="DepartmentId" required>
+                            <option value="">Select Department</option>
+                            @if (ViewBag.Departments != null)
+                            {
+                                foreach (var department in ViewBag.Departments)
+                                {
+                                    <option value="@department.DepartmentId">@department.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="JobTitleId" class="form-label">Job Title</label>
+                        <select class="form-control" id="JobTitleId" name="JobTitleId" required>
+                            <option value="">Select Job Title</option>
+                            <!-- Job Titles will be populated dynamically based on the selected Department -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <textarea class="form-control" id="Description" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="SalaryRange" class="form-label">Salary Range</label>
+                        <input type="text" class="form-control" id="SalaryRange" name="SalaryRange" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Status" class="form-label">Status</label>
+                        <select class="form-control" id="Status" name="Status" required>
+                            <option value="Open">Open</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Filled">Filled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Job Modal -->
+<div class="modal fade" id="editJobModal" tabindex="-1" aria-labelledby="editJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editJobModalLabel">Edit Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editJobForm" asp-action="EditJob" method="post">
+                    <input type="hidden" id="EditJobID" name="JobID" />
+                    <div class="mb-3">
+                        <label for="EditTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="EditTitle" name="Title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="EditDescription" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditDepartment" class="form-label">Department</label>
+                        <input type="text" class="form-control" id="EditDepartment" name="Department" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditSalaryRange" class="form-label">Salary Range</label>
+                        <input type="text" class="form-control" id="EditSalaryRange" name="SalaryRange" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditStatus" class="form-label">Status</label>
+                        <select class="form-control" id="EditStatus" name="Status" required>
+                            <option value="Open">Open</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Filled">Filled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script to Load Edit Form -->
+<script>
+    function loadEditForm(jobID, jobTitleName, description, departmentName, salaryRange, status) {
+        document.getElementById('EditJobID').value = jobID;
+        document.getElementById('EditTitle').value = jobTitleName; 
+        document.getElementById('EditDepartment').value = departmentName;
+        document.getElementById('EditDescription').value = description;
+        document.getElementById('EditSalaryRange').value = salaryRange;
+        document.getElementById('EditStatus').value = status;
+    }
+</script>
+
+<!-- SweetAlert Script -->
+@section Scripts {
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '@TempData["SuccessMessage"]',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '@TempData["ErrorMessage"]',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    }
+
+    <script>
+        // Fetch Job Titles based on the selected Department
+        document.getElementById('DepartmentId').addEventListener('change', function () {
+            var departmentId = this.value;
+            var jobTitleDropdown = document.getElementById('JobTitleId');
+
+            // Clear existing options
+            jobTitleDropdown.innerHTML = '<option value="">Select Job Title</option>';
+
+            if (departmentId) {
+                // Fetch Job Titles for the selected Department
+                fetch(`/Admin/GetJobTitles?departmentId=${departmentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function (jobTitle) {
+                            var option = document.createElement('option');
+                            option.value = jobTitle.jobTitleId; // Ensure this is an integer
+                            option.textContent = jobTitle.name;
+                            jobTitleDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching job titles:', error));
+            }
+        });
+    </script>
+}

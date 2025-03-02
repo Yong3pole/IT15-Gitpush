@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Onboarding Landing Page";
+}
+
+<div class="container">
+    <h2>Onboarding Landing Page</h2>
+    <p>Welcome to the onboarding section. Please select an action below:</p>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">View Hired Applicants</h5>
+                    <p class="card-text">View details of applicants who have been hired.</p>
+                    <a href="@Url.Action("Onboarding", "Onboarding")" class="btn btn-primary">Go to Onboarding</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Onboarding Tasks</h5>
+                    <p class="card-text">Manage tasks related to onboarding new hires.</p>
+                    <a href="#" class="btn btn-primary">Manage Tasks</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Reports</h5>
+                    <p class="card-text">Generate reports related to onboarding.</p>
+                    <a href="#" class="btn btn-primary">View Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
