@@ -4,36 +4,40 @@
     ViewData["Title"] = "Organization";
 }
 
-<h2 class="text-center my-4">📌 Organizational Structure</h2>
-
-
-
 <div class="container">
-    @foreach (var department in Model)
-    {
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">@department.Name</h5>
-            </div>
-            <div class="card-body">
-                <ul class="list-group">
-                    @foreach (var job in department.JobTitles)
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>👤 @job.Name</span>
-                            @if (job.IsFilled == true)
-                            {
-                                <span class="badge bg-success">Filled</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning">Vacant</span>
-                            }
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    }
-</div>
+    <h2 class="text-center my-4">📌 Organizational Structure</h2>
 
+    <div class="row">
+        @foreach (var department in Model)
+        {
+            <div class="col-md-4">
+                <!-- Divide into 3 columns -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@department.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            @foreach (var job in department.JobTitles)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>👤 @job.Name</span>
+                                    @if (job.EmployeeId != null && job.Employee != null)
+                                    {
+                                        <span class="badge bg-success">
+                                            Filled - @job.Employee.FullName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Vacant</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

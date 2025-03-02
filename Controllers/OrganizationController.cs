@@ -24,6 +24,7 @@ namespace IT15_TripoleMedelTijol.Controllers
         {
             var departments = _context.Departments
                 .Include(d => d.JobTitles)
+                .ThenInclude(j => j.Employee)
                 .ToList();
 
             return View(departments);
