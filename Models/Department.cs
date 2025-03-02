@@ -15,5 +15,7 @@ namespace IT15_TripoleMedelTijol.Models
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; } // Nullable
+        public ICollection<JobTitle> JobTitles { get; set; } = new List<JobTitle>();
+
     }
 }

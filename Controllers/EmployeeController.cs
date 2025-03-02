@@ -1,6 +1,13 @@
-﻿using IT15_TripoleMedelTijol.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using IT15_TripoleMedelTijol.Models;
+using IT15_TripoleMedelTijol.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using Microsoft.Extensions.Hosting;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
@@ -15,9 +22,11 @@ namespace IT15_TripoleMedelTijol.Controllers
 
         public IActionResult Index()
         {
-            int employeeCount = _context.Employees.Count(); // Get the total number of employees
-            return View(employeeCount); // Pass the count to the view
+            ViewData["DepartmentCount"] = _context.Departments.Count();
+            ViewData["EmployeeCount"] = _context.Employees.Count();
+            return View();
         }
+
 
         public IActionResult ManageEmployees()
         {

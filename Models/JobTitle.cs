@@ -18,7 +18,7 @@ namespace IT15_TripoleMedelTijol.Models
 
         public required Department Department { get; set; }
 
-        // ✅ Indicates if the position is currently occupied
+        // ✅ Indicates if the position is currently occupied // nullable
         public bool? IsFilled { get; set; } = false;
 
         // ✅ Stores the EmployeeId of the person filling this job (nullable for multi-employee roles)
