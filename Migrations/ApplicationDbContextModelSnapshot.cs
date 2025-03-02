@@ -98,7 +98,7 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasIndex("JobID");
 
-                    b.ToTable("Applicants");
+                    b.ToTable("Applicants", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.ApplicationUser", b =>
@@ -191,7 +191,7 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendance");
+                    b.ToTable("Attendance", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Department", b =>
@@ -211,7 +211,7 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasKey("DepartmentId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Employee", b =>
@@ -322,7 +322,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.JobPosting", b =>
@@ -363,7 +363,7 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasIndex("JobTitleId");
 
-                    b.ToTable("JobPostings");
+                    b.ToTable("JobPostings", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.JobTitle", b =>
@@ -398,7 +398,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .IsUnique()
                         .HasFilter("[EmployeeId] IS NOT NULL");
 
-                    b.ToTable("JobTitles");
+                    b.ToTable("JobTitles", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Performance", b =>
@@ -431,7 +431,7 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Performance");
+                    b.ToTable("Performance", (string)null);
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Salary", b =>
@@ -456,7 +456,7 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.ToTable("Salaries");
+                    b.ToTable("Salaries", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
