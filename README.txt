@@ -29,3 +29,7 @@ VALUES
 ('Operations Manager', 'Ensures smooth day-to-day business operations.', 0),  
 ('Customer Support Representative', 'Assists customers with inquiries and issues.', 0),  
 ('R&D Engineer', 'Conducts research and develops new products.', 0);  
+
+----------- RESET AUTO INCREMENT -------------
+
+DBCC CHECKIDENT('tableName', RESEED, 0)
