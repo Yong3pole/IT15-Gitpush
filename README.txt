@@ -32,4 +32,4 @@ VALUES
 
 ----------- RESET AUTO INCREMENT -------------
 
-DBCC CHECKIDENT('tableName', RESEED, 0)
+DBCC CHECKIDENT('tableName', RESEED, 0);
