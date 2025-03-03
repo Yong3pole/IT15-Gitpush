@@ -27,6 +27,21 @@ namespace IT15_TripoleMedelTijol.Controllers
             return View();
         }
 
+        public async Task<IActionResult> GetEmployeeDetails(string id)
+        {
+            var employee = await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.JobTitle)
+                .Include(e => e.Applicant)
+                .FirstOrDefaultAsync(e => e.EmployeeID == id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_EmployeeDetailsPartial", employee);
+        }
 
         public IActionResult ManageEmployees()
         {
