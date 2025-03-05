@@ -16,6 +16,12 @@ namespace IT15_TripoleMedelTijol.Data
         // Employee Table
         public DbSet<Employee> Employees { get; set; }
 
+        // Leaves Tables
+        public DbSet<LeaveType> LeaveTypes { get; set; }
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
+        public DbSet<LeaveBalance> LeaveBalances { get; set; }
+
+
         // Salary Table
         public DbSet<Salary> Salaries { get; set; }
 
