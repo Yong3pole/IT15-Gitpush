@@ -86,6 +86,15 @@ namespace IT15_TripoleMedelTijol.Data
                 .WithOne(e => e.JobTitle) // An Employee holds one JobTitle
                 .HasForeignKey<JobTitle>(jt => jt.EmployeeId) // JobTitle table has the EmployeeId
                 .OnDelete(DeleteBehavior.SetNull); // If the Employee is deleted, set EmployeeId to NULL in JobTitle (position becomes vacant)
+
+            // Seed Leave Types
+            builder.Entity<LeaveType>().HasData(
+                new LeaveType { LeaveTypeId = 1, Name = "Vacation Leave", DefaultDays = 15, IsPaid = true },
+                new LeaveType { LeaveTypeId = 2, Name = "Sick Leave", DefaultDays = 10, IsPaid = true },
+                new LeaveType { LeaveTypeId = 3, Name = "Unpaid Leave", DefaultDays = 0, IsPaid = false },
+                new LeaveType { LeaveTypeId = 4, Name = "Bereavement Leave", DefaultDays = 5, IsPaid = true },
+                new LeaveType { LeaveTypeId = 5, Name = "Maternity Leave", DefaultDays = 105, IsPaid = true }
+   );
         }
     }
 }

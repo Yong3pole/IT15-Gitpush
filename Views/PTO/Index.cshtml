@@ -1,0 +1,89 @@
+﻿@model IEnumerable<LeaveRequest>
+@{
+    ViewData["Title"] = "Leave Requests";
+}
+
+<h2>Leave Requests</h2>
+
+<!-- Button to Open Modal -->
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#leaveRequestModal">
+    + Add Leave Request
+</button>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.Employee.FullName</td>
+                <td>@request.LeaveType.Name</td>
+                <td>@request.StartDate.ToShortDateString()</td>
+                <td>@request.EndDate.ToShortDateString()</td>
+                <td>@request.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="leaveRequestModal" tabindex="-1" aria-labelledby="leaveRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leaveRequestModalLabel">Add Leave Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="SubmitLeaveRequest" asp-controller="PTO" method="post">
+                    <div class="mb-3">
+                        <label for="EmployeeID" class="form-label">Employee</label>
+                        <select class="form-control" name="EmployeeID" required>
+                            <option value="">Select Employee</option>
+                            @foreach (var emp in ViewBag.Employees)
+                            {
+                                <option value="@emp.Value">@emp.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="LeaveTypeId" class="form-label">Leave Type</label>
+                        <select class="form-control" name="LeaveTypeId" required>
+                            <option value="">Select Leave Type</option>
+                            @foreach (var leaveType in ViewBag.LeaveTypes)
+                            {
+                                <option value="@leaveType.Value">@leaveType.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="StartDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" name="StartDate" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="EndDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="EndDate" required>
+                    </div>
+
+                    <input type="hidden" name="Status" value="Pending" />
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

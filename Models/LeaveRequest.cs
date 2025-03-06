@@ -37,6 +37,10 @@ namespace IT15_TripoleMedelTijol.Models
         public ApplicationUser? Approver { get; set; } // Navigation property
 
         public DateTime? ApprovalDate { get; set; }
+
+        // ✅ Add this missing property
+        [Required]
+        public DateTime RequestDate { get; set; } = DateTime.Now;
     }
 
 }
