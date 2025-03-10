@@ -17,7 +17,10 @@ namespace IT15_TripoleMedelTijol.Models
 
         public DateTime EffectiveDate { get; set; } = DateTime.Now; // When the salary was set
 
+        public bool IsCurrent { get; set; } = true; // Marks the latest salary
+
         // Navigation property
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
     }
+
 }
