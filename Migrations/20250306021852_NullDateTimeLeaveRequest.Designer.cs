@@ -4,6 +4,7 @@ using IT15_TripoleMedelTijol.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IT15_TripoleMedelTijol.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250306021852_NullDateTimeLeaveRequest")]
+    partial class NullDateTimeLeaveRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -503,37 +506,37 @@ namespace IT15_TripoleMedelTijol.Migrations
                         new
                         {
                             LeaveTypeId = 1,
-                            DefaultDays = 10,
-                            IsPaid = true,
-                            Name = "Sick Leave"
-                        },
-                        new
-                        {
-                            LeaveTypeId = 2,
                             DefaultDays = 15,
                             IsPaid = true,
                             Name = "Vacation Leave"
                         },
                         new
                         {
-                            LeaveTypeId = 3,
-                            DefaultDays = 60,
+                            LeaveTypeId = 2,
+                            DefaultDays = 10,
                             IsPaid = true,
-                            Name = "Maternity Leave"
+                            Name = "Sick Leave"
+                        },
+                        new
+                        {
+                            LeaveTypeId = 3,
+                            DefaultDays = 0,
+                            IsPaid = false,
+                            Name = "Unpaid Leave"
                         },
                         new
                         {
                             LeaveTypeId = 4,
-                            DefaultDays = 7,
+                            DefaultDays = 5,
                             IsPaid = true,
-                            Name = "Paternity Leave"
+                            Name = "Bereavement Leave"
                         },
                         new
                         {
                             LeaveTypeId = 5,
-                            DefaultDays = 0,
-                            IsPaid = false,
-                            Name = "Unpaid Leave"
+                            DefaultDays = 105,
+                            IsPaid = true,
+                            Name = "Maternity Leave"
                         });
                 });
 

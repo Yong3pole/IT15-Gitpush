@@ -44,6 +44,15 @@ namespace IT15_TripoleMedelTijol.Data
         {
             base.OnModelCreating(builder);
 
+            // ✅ Seed default Leave Types
+            builder.Entity<LeaveType>().HasData(
+                new LeaveType { LeaveTypeId = 1, Name = "Sick Leave", DefaultDays = 10, IsPaid = true },
+                new LeaveType { LeaveTypeId = 2, Name = "Vacation Leave", DefaultDays = 15, IsPaid = true },
+                new LeaveType { LeaveTypeId = 3, Name = "Maternity Leave", DefaultDays = 60, IsPaid = true },
+                new LeaveType { LeaveTypeId = 4, Name = "Paternity Leave", DefaultDays = 7, IsPaid = true },
+                new LeaveType { LeaveTypeId = 5, Name = "Unpaid Leave", DefaultDays = 0, IsPaid = false }
+            );
+
             // Set EmployeeID as unique to prevent duplicates
             builder.Entity<Employee>()
                 .HasIndex(e => e.EmployeeID)
@@ -87,14 +96,6 @@ namespace IT15_TripoleMedelTijol.Data
                 .HasForeignKey<JobTitle>(jt => jt.EmployeeId) // JobTitle table has the EmployeeId
                 .OnDelete(DeleteBehavior.SetNull); // If the Employee is deleted, set EmployeeId to NULL in JobTitle (position becomes vacant)
 
-            // Seed Leave Types
-            builder.Entity<LeaveType>().HasData(
-                new LeaveType { LeaveTypeId = 1, Name = "Vacation Leave", DefaultDays = 15, IsPaid = true },
-                new LeaveType { LeaveTypeId = 2, Name = "Sick Leave", DefaultDays = 10, IsPaid = true },
-                new LeaveType { LeaveTypeId = 3, Name = "Unpaid Leave", DefaultDays = 0, IsPaid = false },
-                new LeaveType { LeaveTypeId = 4, Name = "Bereavement Leave", DefaultDays = 5, IsPaid = true },
-                new LeaveType { LeaveTypeId = 5, Name = "Maternity Leave", DefaultDays = 105, IsPaid = true }
-   );
         }
     }
 }

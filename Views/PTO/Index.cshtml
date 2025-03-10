@@ -44,6 +44,7 @@
             </div>
             <div class="modal-body">
                 <form asp-action="SubmitLeaveRequest" asp-controller="PTO" method="post">
+                    @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label for="EmployeeID" class="form-label">Employee</label>
                         <select class="form-control" name="EmployeeID" required>
@@ -87,3 +88,12 @@
         </div>
     </div>
 </div>
+
+@if (ViewBag.ShowModal == true)
+{
+    <script>
+        $(document).ready(function () {
+            $('#leaveRequestModal').modal('show');
+        });
+    </script>
+}

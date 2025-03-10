@@ -43,11 +43,26 @@ namespace IT15_TripoleMedelTijol.Controllers
                     .ToListAsync());
             }
 
+            // Validate EmployeeID and LeaveTypeId
+            var employee = await _context.Employees.FindAsync(leaveRequest.EmployeeID);
+            var leaveType = await _context.LeaveTypes.FindAsync(leaveRequest.LeaveTypeId);
+
+            if (employee == null || leaveType == null)
+            {
+                ModelState.AddModelError("", "Invalid Employee or Leave Type selected.");
+                ViewBag.Employees = new SelectList(await _context.Employees.ToListAsync(), "EmployeeID", "FullName");
+                ViewBag.LeaveTypes = new SelectList(await _context.LeaveTypes.ToListAsync(), "LeaveTypeId", "Name");
+                return View("Index", await _context.LeaveRequests
+                    .Include(lr => lr.Employee)
+                    .Include(lr => lr.LeaveType)
+                    .ToListAsync());
+            }
+
             try
             {
                 // Populate navigation properties
-                leaveRequest.Employee = await _context.Employees.FindAsync(leaveRequest.EmployeeID);
-                leaveRequest.LeaveType = await _context.LeaveTypes.FindAsync(leaveRequest.LeaveTypeId);
+                leaveRequest.Employee = employee;
+                leaveRequest.LeaveType = leaveType;
 
                 leaveRequest.Status = "Pending"; // Default status
                 leaveRequest.RequestDate = DateTime.Now;
@@ -58,8 +73,14 @@ namespace IT15_TripoleMedelTijol.Controllers
             catch (DbUpdateException ex)
             {
                 // Log database errors
-                Console.WriteLine(ex.Message);
-                return RedirectToAction("Index");
+                Console.WriteLine(ex.InnerException?.Message); // Log the inner exception for more details
+                ModelState.AddModelError("", "An error occurred while saving the leave request. Please try again.");
+                ViewBag.Employees = new SelectList(await _context.Employees.ToListAsync(), "EmployeeID", "FullName");
+                ViewBag.LeaveTypes = new SelectList(await _context.LeaveTypes.ToListAsync(), "LeaveTypeId", "Name");
+                return View("Index", await _context.LeaveRequests
+                    .Include(lr => lr.Employee)
+                    .Include(lr => lr.LeaveType)
+                    .ToListAsync());
             }
 
             return RedirectToAction("Index");

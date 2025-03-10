@@ -11,12 +11,12 @@ namespace IT15_TripoleMedelTijol.Models
         [ForeignKey("Employee")]
         public required string EmployeeID { get; set; } // FK to Employee
 
-        public required Employee Employee { get; set; } // Navigation property
+        public Employee? Employee { get; set; }
 
         [ForeignKey("LeaveType")]
         public int LeaveTypeId { get; set; } // FK to LeaveType
 
-        public required LeaveType LeaveType { get; set; } // Navigation property
+        public LeaveType? LeaveType { get; set; }
 
         [Required]
         public DateTime StartDate { get; set; }
@@ -24,7 +24,6 @@ namespace IT15_TripoleMedelTijol.Models
         [Required]
         public DateTime EndDate { get; set; }
 
-        public int TotalDays => (EndDate - StartDate).Days + 1; // Calculate days requested
 
         [Required]
         public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected
@@ -40,7 +39,7 @@ namespace IT15_TripoleMedelTijol.Models
 
         // ✅ Add this missing property
         [Required]
-        public DateTime RequestDate { get; set; } = DateTime.Now;
+        public DateTime? RequestDate { get; set; } = DateTime.Now;
     }
 
 }

@@ -21,6 +21,8 @@ namespace IT15_TripoleMedelTijol.Models
         public int DefaultDays { get; set; } // Default allocation of days per year
 
         public bool IsPaid { get; set; } // Whether this leave type is paid or unpaid
+
+
     }
 
 }
