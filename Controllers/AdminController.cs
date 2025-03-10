@@ -32,28 +32,6 @@ namespace IT15_TripoleMedelTijol.Controllers
             return View();
         }
 
-
-        // View Employee details in UserManagement page
-        public async Task<IActionResult> GetEmployeeDetails(string id)
-        {
-            // Fetch the employee
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            // Fetch the current salary
-            var currentSalary = await _context.Salaries
-                .Where(s => s.EmployeeID == id) // Use 'id' instead of 'employeeId'
-                .OrderByDescending(s => s.EffectiveDate)
-                .FirstOrDefaultAsync();
-
-            // Pass both employee and currentSalary to the view
-            ViewBag.CurrentSalary = currentSalary?.Amount.ToString("C") ?? "N/A"; // Format as currency or display "N/A"
-            return PartialView("_EmployeeDetailsPartial", employee);
-        }
-
         public IActionResult PayrollAttendance()
         {
             return View();

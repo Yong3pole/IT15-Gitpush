@@ -23,6 +23,13 @@ namespace IT15_TripoleMedelTijol.Models
         [Required]
         [RegularExpression("^(Present|Absent|Late)$", ErrorMessage = "Invalid status. Only 'Present', 'Absent', or 'Late' are allowed.")]
         public string Status { get; set; } = string.Empty;
+
+        // New Fields
+        [Required]
+        public string UploadedBy { get; set; } = string.Empty; // User who uploaded the file, Id
+
+        [Required]
+        public DateTime UploadedAt { get; set; } = DateTime.Now; // Timestamp of upload
     }
 
 }

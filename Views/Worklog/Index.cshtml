@@ -1,16 +1,138 @@
-﻿
-
-@{
+﻿@{
     ViewData["Title"] = "Worklog";
 }
 
 <h2>Worklog Management</h2>
 
-<div class="btn-group mb-3">
-    <a asp-action="ImportAttendance" class="btn btn-primary">📂 Import Attendance</a>
-    <a asp-action="GeneratePayroll" class="btn btn-success">💰 Generate Payroll</a>
-    <a asp-action="ViewAttendance" class="btn btn-info">📅 View Attendance Records</a>
-    <a asp-action="PayrollHistory" class="btn btn-warning">📜 View Payroll History</a>
+<!-- Buttons arranged in 2 columns -->
+<div class="row mb-3">
+    <div class="col-md-6 d-grid">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">📂 Import Attendance</button>
+    </div>
+    <div class="col-md-6 d-grid">
+        <a asp-action="GeneratePayroll" class="btn btn-success">💰 Generate Payroll</a>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-md-6 d-grid">
+        <a asp-action="ViewAttendance" class="btn btn-info">📅 View Attendance Records</a>
+    </div>
+    <div class="col-md-6 d-grid">
+        <a asp-action="PayrollHistory" class="btn btn-warning">📜 View Payroll History</a>
+    </div>
 </div>
 
+<!-- Import Attendance Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">📂 Import Attendance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="importForm" asp-action="ImportAttendance" method="post" enctype="multipart/form-data">
+                    <!-- Date Picker for Attendance Date -->
+                    <!-- Date Picker for Attendance Date -->
+                    <div class="mb-3">
+                        <label for="selectedDate" class="form-label">Select Attendance Date</label>
+                        <input type="date" name="selectedDate" id="selectedDate" class="form-control" required>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            let disabledDates = @Html.Raw(Json.Serialize(ViewBag.ExistingAttendanceDates));
+
+                            let datePicker = document.getElementById("selectedDate");
+
+                            datePicker.addEventListener("input", function () {
+                                if (disabledDates.includes(this.value)) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Date Not Allowed',
+                                        text: 'Attendance for this date has already been uploaded.',
+                                        confirmButtonColor: '#dc3545'
+                                    });
+                                    this.value = ""; // Clear invalid selection
+                                }
+                            });
+
+                            // Optional: Disable past dates if needed
+                            datePicker.min = new Date().toISOString().split("T")[0];
+                        });
+                    </script>
+
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select Attendance File (CSV or Excel)</label>
+                        <input type="file" name="file" id="file" class="form-control" accept=".csv, .xlsx, .xls" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-primary" onclick="confirmUpload()">Upload & Process</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Success and Error messages, Sweet Alert -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    @if (TempData["Success"] != null)
+    {
+        <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    confirmButtonColor: '#28a745'
+                });
+        </text>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+        </text>
+    }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        window.confirmUpload = function () {
+            let fileInput = document.getElementById("file");
+            if (!fileInput.files.length) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No File Selected',
+                    text: 'Please select a file before uploading!',
+                    confirmButtonColor: '#ffc107'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will process the attendance file.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#dc3545',
+                confirmButtonText: 'Yes, Upload it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("importForm").submit();
+                }
+            });
+        };
+    });
+</script>
 

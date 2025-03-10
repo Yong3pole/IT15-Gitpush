@@ -35,7 +35,9 @@ namespace IT15_TripoleMedelTijol.Data
         public DbSet<Applicant> Applicants { get; set; }
 
         // Attendance Table
-        public DbSet<Attendance> Attendance { get; set; }
+        public DbSet<EmployeeAttendance> EmployeeAttendances { get; set; }
+
+        public DbSet<Attendance> Attendance { get; set; } // No longer used
 
         // Performance Table
         public DbSet<Performance> Performance { get; set; }
@@ -67,7 +69,7 @@ namespace IT15_TripoleMedelTijol.Data
 
             // Ensure the Salary Amount column has correct precision for decimal values
             builder.Entity<Salary>()
-                .Property(s => s.Amount)
+                .Property(s => s.MonthlySalary)
                 .HasColumnType("decimal(18,2)");
 
             // Configure one-to-one relationship between Employee and ApplicationUser

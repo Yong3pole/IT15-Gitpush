@@ -4,6 +4,7 @@ using IT15_TripoleMedelTijol.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IT15_TripoleMedelTijol.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310192750_UpdateEmployeeAttendanceTable")]
+    partial class UpdateEmployeeAttendanceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -617,26 +620,18 @@ namespace IT15_TripoleMedelTijol.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SalaryID"));
 
-                    b.Property<decimal>("DailyRate")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("EffectiveDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EmployeeID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("HourlyRate")
-                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
-
-                    b.Property<decimal>("MonthlySalary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TwoWeekPay")
-                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("SalaryID");
 
@@ -934,7 +929,8 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.HasOne("IT15_TripoleMedelTijol.Models.Employee", "Employee")
                         .WithMany("Salaries")
                         .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Employee");
                 });
