@@ -25,6 +25,7 @@ namespace IT15_TripoleMedelTijol.Models
         public string Status { get; set; } = string.Empty;
 
         // New Fields
+
         [Required]
         public string UploadedBy { get; set; } = string.Empty; // User who uploaded the file, Id
 

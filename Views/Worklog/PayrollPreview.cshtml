@@ -1,0 +1,37 @@
+﻿@model List<PayrollViewModel>
+
+@{
+    ViewData["Title"] = "Payroll Preview";
+}
+
+<h2>Payroll Preview</h2>
+<p>
+    Showing payroll for <strong>@Model.FirstOrDefault()?.StartDate.ToShortDateString()</strong>
+    to <strong>@Model.FirstOrDefault()?.EndDate.ToShortDateString()</strong>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Employee Name</th>
+            <th>Present Days</th>
+            <th>Late Minutes</th> <!-- ✅ Added Late Minutes -->
+            <th>Overtime Minutes</th> <!-- ✅ Added Overtime Minutes -->
+            <th>Total Earnings</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payroll in Model)
+        {
+            <tr>
+                <td>@payroll.EmployeeName</td>
+                <td>@payroll.PresentDays</td>
+                <td>@payroll.LateMinutes min</td> <!-- ✅ Display Late Minutes -->
+                <td>@payroll.OvertimeMinutes min</td> <!-- ✅ Display Overtime Minutes -->
+                <td>₱@payroll.TotalEarnings.ToString("N2")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back</a>

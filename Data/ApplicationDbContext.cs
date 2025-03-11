@@ -25,6 +25,7 @@ namespace IT15_TripoleMedelTijol.Data
         // Salary Table
         public DbSet<Salary> Salaries { get; set; }
 
+
         // Departments Table
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -36,8 +37,11 @@ namespace IT15_TripoleMedelTijol.Data
 
         // Attendance Table
         public DbSet<EmployeeAttendance> EmployeeAttendances { get; set; }
-
         public DbSet<Attendance> Attendance { get; set; } // No longer used
+
+        // Payroll Table
+        public DbSet<Payroll> Payrolls { get; set; }
+
 
         // Performance Table
         public DbSet<Performance> Performance { get; set; }

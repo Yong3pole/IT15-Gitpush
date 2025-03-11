@@ -4,6 +4,7 @@ using IT15_TripoleMedelTijol.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IT15_TripoleMedelTijol.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250311060832_AddPayrollTable")]
+    partial class AddPayrollTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -576,58 +579,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                         });
                 });
 
-            modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Payroll", b =>
-                {
-                    b.Property<int>("PayrollID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollID"));
-
-                    b.Property<string>("EmployeeID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("GrossPay")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("LateDeduction")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("NetPay")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("OvertimePay")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("PagIbigDeduction")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<DateTime>("PeriodEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PeriodStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("PhilHealthDeduction")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<DateTime>("ProcessedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("SSSDeduction")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("TaxDeduction")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.HasKey("PayrollID");
-
-                    b.HasIndex("EmployeeID");
-
-                    b.ToTable("Payrolls");
-                });
-
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Performance", b =>
                 {
                     b.Property<int>("PerformanceId")
@@ -968,17 +919,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("LeaveType");
-                });
-
-            modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Payroll", b =>
-                {
-                    b.HasOne("IT15_TripoleMedelTijol.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Performance", b =>

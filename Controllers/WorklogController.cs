@@ -151,7 +151,57 @@ namespace IT15_TripoleMedelTijol.Controllers
             return Content(html, "text/html");
         }
 
+        // Payroll here
+        [HttpGet]
+        public async Task<IActionResult> GeneratePayroll(DateTime startDate, DateTime endDate)
+        {
+            var employees = await _context.Employees
+                .Include(e => e.Salaries)
+                .Where(e => e.Salaries.Any(s => s.IsCurrent))
+                .ToListAsync();
 
+            var payrollResults = new List<PayrollViewModel>();
+
+            foreach (var employee in employees)
+            {
+                var salary = employee.Salaries.First(s => s.IsCurrent);
+                var dailyRate = salary.DailyRate;
+
+                // Get attendance records for the selected period
+                var attendanceRecords = await _context.EmployeeAttendances
+                    .Where(a => a.EmployeeID == employee.EmployeeID && a.Date >= startDate && a.Date <= endDate)
+                    .ToListAsync();
+
+                int presentDays = attendanceRecords.Count(a => a.Status == "Present" || a.Status == "Late");
+
+                // Calculate total LateMinutes and OvertimeMinutes dynamically
+                int totalLateMinutes = attendanceRecords.Sum(a =>
+                    a.ClockIn.HasValue && a.ClockIn.Value > TimeSpan.FromHours(8)
+                    ? (int)(a.ClockIn.Value - TimeSpan.FromHours(8)).TotalMinutes
+                    : 0);
+
+                int totalOvertimeMinutes = attendanceRecords.Sum(a =>
+                    a.ClockOut.HasValue && a.ClockOut.Value > TimeSpan.FromHours(17)
+                    ? (int)(a.ClockOut.Value - TimeSpan.FromHours(17)).TotalMinutes
+                    : 0);
+
+                decimal totalEarnings = dailyRate * presentDays;
+
+                payrollResults.Add(new PayrollViewModel
+                {
+                    EmployeeID = employee.EmployeeID,
+                    EmployeeName = $"{employee.FirstName} {employee.LastName}",
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    PresentDays = presentDays,
+                    LateMinutes = totalLateMinutes,  // ✅ Late Minutes calculated dynamically
+                    OvertimeMinutes = totalOvertimeMinutes,  // ✅ Overtime Minutes calculated dynamically
+                    TotalEarnings = totalEarnings
+                });
+            }
+
+            return View("PayrollPreview", payrollResults);
+        }
 
     }
 }

@@ -9,8 +9,9 @@
     <div class="col-md-6 d-grid">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">📂 Import Attendance</button>
     </div>
+    <!-- Button to open the payroll modal -->
     <div class="col-md-6 d-grid">
-        <a asp-action="GeneratePayroll" class="btn btn-success">💰 Generate Payroll</a>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#payrollModal">💰 Generate Payroll</button>
     </div>
 </div>
 <div class="row mb-3">
@@ -75,6 +76,44 @@
     </div>
 </div>
 
+<!-- Payroll Generation Modal -->
+<div class="modal fade" id="payrollModal" tabindex="-1" aria-labelledby="payrollModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="payrollModalLabel">Generate Payroll</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="payrollForm" action="@Url.Action("GeneratePayroll", "Worklog")" method="get">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Generate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let today = new Date().toISOString().split('T')[0];
+        let twoWeeksLater = new Date();
+        twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+        let formattedEndDate = twoWeeksLater.toISOString().split('T')[0];
+
+        document.getElementById("startDate").value = today;
+        document.getElementById("endDate").value = formattedEndDate;
+    });
+</script>
 
 <!-- Success and Error messages, Sweet Alert -->
 <script>
