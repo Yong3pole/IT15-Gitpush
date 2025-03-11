@@ -58,35 +58,21 @@ namespace IT15_TripoleMedelTijol.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditEmployee(Employee employee, decimal monthlySalary, DateTime effectiveDate, bool isCurrent)
+        public IActionResult EditEmployee(string employeeID)
         {
-            if (ModelState.IsValid)
+            // Fetch the employee details from the database using the employeeID
+            var employee = _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.JobTitle)
+                .Include(e => e.Salaries) // Include salaries if needed
+                .FirstOrDefault(e => e.EmployeeID == employeeID);
+
+            if (employee == null)
             {
-                // Update employee details
-                _context.Update(employee);
-
-                // Add or update salary
-                var currentSalary = employee.Salaries.FirstOrDefault(s => s.IsCurrent);
-                if (currentSalary != null)
-                {
-                    currentSalary.IsCurrent = false; // Mark the old salary as not current
-                }
-
-                var newSalary = new Salary
-                {
-                    EmployeeID = employee.EmployeeID,
-                    MonthlySalary = monthlySalary,
-                    EffectiveDate = effectiveDate,
-                    IsCurrent = isCurrent
-                };
-
-                _context.Salaries.Add(newSalary);
-                _context.SaveChanges();
-
-                return RedirectToAction("ManageEmployees");
+                return NotFound(); // Handle the case where the employee is not found
             }
 
-            // Repopulate ViewBag for dropdowns if the model is invalid
+            // Populate ViewBag for dropdowns
             ViewBag.JobTitles = _context.JobTitles
                 .Select(j => new SelectListItem { Value = j.JobTitleId.ToString(), Text = j.Name })
                 .ToList();
@@ -95,6 +81,7 @@ namespace IT15_TripoleMedelTijol.Controllers
                 .Select(d => new SelectListItem { Value = d.DepartmentId.ToString(), Text = d.Name })
                 .ToList();
 
+            // Pass the employee object to the view
             return View(employee);
         }
 

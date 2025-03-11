@@ -165,25 +165,6 @@
                                 <span class="text-danger" data-valmsg-for="MonthlySalary" data-valmsg-replace="true"></span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="EffectiveDate" class="form-label">Effective Date</label>
-                                <input type="date" class="form-control" id="EffectiveDate" name="EffectiveDate" value="@Model.Salaries.FirstOrDefault(s => s.IsCurrent)?.EffectiveDate.ToString("yyyy-MM-dd")" />
-                                <span class="text-danger" data-valmsg-for="EffectiveDate" data-valmsg-replace="true"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="IsCurrent" class="form-label">Is Current Salary?</label>
-                                <select class="form-control" id="IsCurrent" name="IsCurrent">
-                                    <option value="true" selected="@(Model.Salaries.FirstOrDefault(s => s.IsCurrent)?.IsCurrent == true)">Yes</option>
-                                    <option value="false" selected="@(Model.Salaries.FirstOrDefault(s => s.IsCurrent)?.IsCurrent == false)">No</option>
-                                </select>
-                                <span class="text-danger" data-valmsg-for="IsCurrent" data-valmsg-replace="true"></span>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
