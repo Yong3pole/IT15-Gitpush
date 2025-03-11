@@ -32,6 +32,8 @@ namespace IT15_TripoleMedelTijol.Controllers
             return View();
         }
 
+        // Import Attendance Records
+
 
         [HttpPost]
         public async Task<IActionResult> ImportAttendance(IFormFile file, DateTime selectedDate)
@@ -103,6 +105,53 @@ namespace IT15_TripoleMedelTijol.Controllers
 
             return RedirectToAction("Index");
         }
+
+        // View Attendance Records
+
+        public IActionResult AttendanceCalendar()
+        {
+            return View(); // Ensure this maps to Views/Worklog/ViewAttendance.cshtml
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAttendanceSummary()
+        {
+            var summary = await _context.EmployeeAttendances
+                .GroupBy(a => a.Date)
+                .Select(g => new
+                {
+                    title = $"✅ {g.Count(a => a.Status == "Present")} | ❌ {g.Count(a => a.Status == "Absent")} | ⏳ {g.Count(a => a.Status == "Late")}",
+                    start = g.Key.ToString("yyyy-MM-dd")
+                })
+                .ToListAsync();
+
+            return Json(summary);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAttendanceDetails(DateTime date)
+        {
+            var records = await _context.EmployeeAttendances
+                .Where(a => a.Date == date)
+                .Include(a => a.Employee)
+                .ToListAsync();
+
+            if (!records.Any())
+            {
+                return Content("<p>No records found for this date.</p>", "text/html");
+            }
+
+            var html = "<ul class='list-group'>";
+            foreach (var record in records)
+            {
+                html += $"<li class='list-group-item'>{record.Employee.FullName} - {record.Status} ({record.ClockIn} - {record.ClockOut})</li>";
+            }
+            html += "</ul>";
+
+            return Content(html, "text/html");
+        }
+
+
 
     }
 }
