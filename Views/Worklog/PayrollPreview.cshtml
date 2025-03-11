@@ -15,9 +15,15 @@
         <tr>
             <th>Employee Name</th>
             <th>Present Days</th>
-            <th>Late Minutes</th> <!-- ✅ Added Late Minutes -->
-            <th>Overtime Minutes</th> <!-- ✅ Added Overtime Minutes -->
-            <th>Total Earnings</th>
+            <th>Late Minutes</th>
+            <th>Overtime Minutes</th>
+            <th>Gross Earnings</th>
+            <th>Income Tax</th>
+            <th>PhilHealth</th>
+            <th>SSS</th>
+            <th>Pag-IBIG</th>
+            <th>Total Deductions</th>
+            <th>Net Earnings</th>
         </tr>
     </thead>
     <tbody>
@@ -26,9 +32,15 @@
             <tr>
                 <td>@payroll.EmployeeName</td>
                 <td>@payroll.PresentDays</td>
-                <td>@payroll.LateMinutes min</td> <!-- ✅ Display Late Minutes -->
-                <td>@payroll.OvertimeMinutes min</td> <!-- ✅ Display Overtime Minutes -->
-                <td>₱@payroll.TotalEarnings.ToString("N2")</td>
+                <td>@payroll.LateMinutes min</td>
+                <td>@payroll.OvertimeMinutes min</td>
+                <td>₱@payroll.GrossEarnings.ToString("N2")</td>
+                <td>₱@payroll.IncomeTax.ToString("N2")</td>
+                <td>₱@payroll.PhilHealthContribution.ToString("N2")</td>
+                <td>₱@payroll.SSSContribution.ToString("N2")</td>
+                <td>₱@payroll.PagIBIGContribution.ToString("N2")</td>
+                <td>₱@payroll.TotalDeductions.ToString("N2")</td>
+                <td><strong>₱@payroll.NetEarnings.ToString("N2")</strong></td>
             </tr>
         }
     </tbody>

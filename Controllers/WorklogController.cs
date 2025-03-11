@@ -151,7 +151,8 @@ namespace IT15_TripoleMedelTijol.Controllers
             return Content(html, "text/html");
         }
 
-        // Payroll here
+        // GENERATE PAYROLL
+
         [HttpGet]
         public async Task<IActionResult> GeneratePayroll(DateTime startDate, DateTime endDate)
         {
@@ -166,6 +167,7 @@ namespace IT15_TripoleMedelTijol.Controllers
             {
                 var salary = employee.Salaries.First(s => s.IsCurrent);
                 var dailyRate = salary.DailyRate;
+                var hourlyRate = salary.HourlyRate;
 
                 // Get attendance records for the selected period
                 var attendanceRecords = await _context.EmployeeAttendances
@@ -174,19 +176,43 @@ namespace IT15_TripoleMedelTijol.Controllers
 
                 int presentDays = attendanceRecords.Count(a => a.Status == "Present" || a.Status == "Late");
 
-                // Calculate total LateMinutes and OvertimeMinutes dynamically
-                int totalLateMinutes = attendanceRecords.Sum(a =>
-                    a.ClockIn.HasValue && a.ClockIn.Value > TimeSpan.FromHours(8)
-                    ? (int)(a.ClockIn.Value - TimeSpan.FromHours(8)).TotalMinutes
-                    : 0);
+                int totalLateMinutes = 0;
+                int totalOvertimeMinutes = 0;
 
-                int totalOvertimeMinutes = attendanceRecords.Sum(a =>
-                    a.ClockOut.HasValue && a.ClockOut.Value > TimeSpan.FromHours(17)
-                    ? (int)(a.ClockOut.Value - TimeSpan.FromHours(17)).TotalMinutes
-                    : 0);
+                TimeSpan expectedStartTime = new TimeSpan(9, 0, 0); // 9:00 AM
+                TimeSpan expectedEndTime = new TimeSpan(18, 0, 0); // 6:00 PM
 
-                decimal totalEarnings = dailyRate * presentDays;
+                foreach (var record in attendanceRecords)
+                {
+                    // ✅ Ensure ClockIn is not null and compare correctly
+                    if (record.ClockIn.HasValue && record.ClockIn.Value > expectedStartTime)
+                    {
+                        totalLateMinutes += (int)(record.ClockIn.Value - expectedStartTime).TotalMinutes;
+                    }
 
+                    // ✅ Ensure ClockOut is not null and compare correctly
+                    if (record.ClockOut.HasValue && record.ClockOut.Value > expectedEndTime)
+                    {
+                        totalOvertimeMinutes += (int)(record.ClockOut.Value - expectedEndTime).TotalMinutes;
+                    }
+                }
+
+                // ✅ Calculate Gross Earnings
+                decimal tardinessDeduction = (hourlyRate / 60) * totalLateMinutes;
+                decimal overtimePay = (hourlyRate * 1.25m / 60) * totalOvertimeMinutes;
+
+                decimal grossEarnings = (dailyRate * presentDays) - tardinessDeduction + overtimePay;
+
+                // ✅ Calculate Deductions
+                decimal incomeTax = CalculateIncomeTax(grossEarnings);
+                decimal philHealthContribution = CalculatePhilHealthContribution(grossEarnings);
+                decimal sssContribution = CalculateSSSContribution(grossEarnings);
+                decimal pagIBIGContribution = CalculatePagIBIGContribution(grossEarnings);
+
+                decimal totalDeductions = incomeTax + philHealthContribution + sssContribution + pagIBIGContribution;
+                decimal netEarnings = grossEarnings - totalDeductions;
+
+                // ✅ Add to Payroll List
                 payrollResults.Add(new PayrollViewModel
                 {
                     EmployeeID = employee.EmployeeID,
@@ -194,13 +220,64 @@ namespace IT15_TripoleMedelTijol.Controllers
                     StartDate = startDate,
                     EndDate = endDate,
                     PresentDays = presentDays,
-                    LateMinutes = totalLateMinutes,  // ✅ Late Minutes calculated dynamically
-                    OvertimeMinutes = totalOvertimeMinutes,  // ✅ Overtime Minutes calculated dynamically
-                    TotalEarnings = totalEarnings
+                    LateMinutes = totalLateMinutes,
+                    OvertimeMinutes = totalOvertimeMinutes,
+                    GrossEarnings = grossEarnings,
+                    IncomeTax = incomeTax,
+                    PhilHealthContribution = philHealthContribution,
+                    SSSContribution = sssContribution,
+                    PagIBIGContribution = pagIBIGContribution,
+                    TotalDeductions = totalDeductions,
+                    NetEarnings = netEarnings
                 });
             }
 
             return View("PayrollPreview", payrollResults);
+        }
+
+
+        /////////// TAXES AND DEDUCTIONS /////////////////////////
+
+
+        private decimal CalculateIncomeTax(decimal grossEarnings)
+        {
+            // Define tax brackets and rates based on the TRAIN law
+            if (grossEarnings <= 250000)
+                return 0;
+            else if (grossEarnings <= 400000)
+                return (grossEarnings - 250000) * 0.20m;
+            else if (grossEarnings <= 800000)
+                return 30000 + (grossEarnings - 400000) * 0.25m;
+            else if (grossEarnings <= 2000000)
+                return 130000 + (grossEarnings - 800000) * 0.30m;
+            else if (grossEarnings <= 8000000)
+                return 490000 + (grossEarnings - 2000000) * 0.32m;
+            else
+                return 2410000 + (grossEarnings - 8000000) * 0.35m;
+        }
+
+        private decimal CalculatePhilHealthContribution(decimal grossEarnings)
+        {
+            // PhilHealth contribution is 4.5% of gross earnings, equally shared by employer and employee
+            decimal contributionRate = 0.045m;
+            decimal employeeShare = (grossEarnings * contributionRate) / 2;
+            return employeeShare;
+        }
+
+        private decimal CalculateSSSContribution(decimal grossEarnings)
+        {
+            // SSS contribution is based on a schedule; for simplicity, assume a flat rate
+            decimal contributionRate = 0.045m; // Example rate; adjust based on actual schedule
+            decimal employeeShare = grossEarnings * contributionRate;
+            return employeeShare;
+        }
+
+        private decimal CalculatePagIBIGContribution(decimal grossEarnings)
+        {
+            // Pag-IBIG contribution is 2% of gross earnings, equally shared by employer and employee
+            decimal contributionRate = 0.02m;
+            decimal employeeShare = (grossEarnings * contributionRate) / 2;
+            return employeeShare;
         }
 
     }
