@@ -1,0 +1,140 @@
+﻿<!-- To populate editable data, employe details -->
+
+@model Employee
+
+<!-- Add a hidden field for EmployeeID -->
+<input type="hidden" id="EmployeeID" value="@Model.EmployeeID" />
+
+<div class="row">
+    <div class="col-md-6">
+        <h5>Personal Information</h5>
+        <div class="form-group">
+            <label for="FirstName">First Name</label>
+            <input type="text" class="form-control" id="FirstName" value="@Model.FirstName" />
+        </div>
+        <div class="form-group">
+            <label for="LastName">Last Name</label>
+            <input type="text" class="form-control" id="LastName" value="@Model.LastName" />
+        </div>
+        <div class="form-group">
+            <label for="Gender">Gender</label>
+            <select class="form-control" id="Gender">
+                <option value="Male" selected="@(Model.Gender == "Male")">Male</option>
+                <option value="Female" selected="@(Model.Gender == "Female")">Female</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="DateOfBirth">Date of Birth</label>
+            <input type="date" class="form-control" id="DateOfBirth" value="@Model.DateOfBirth?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" class="form-control" id="Email" value="@Model.Email" />
+        </div>
+        <div class="form-group">
+            <label for="Phone">Phone</label>
+            <input type="text" class="form-control" id="Phone" value="@Model.Phone" />
+        </div>
+        <div class="form-group">
+            <label for="CompleteAddress">Address</label>
+            <textarea class="form-control" id="CompleteAddress">@Model.CompleteAddress</textarea>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h5>Job Details</h5>
+        <div class="form-group">
+            <label for="Department">Department</label>
+            <input type="text" class="form-control" id="Department" value="@Model.Department.Name" readonly />
+        </div>
+        <div class="form-group">
+            <label for="JobTitle">Job Title</label>
+            <input type="text" class="form-control" id="JobTitle" value="@Model.JobTitle.Name" readonly />
+        </div>
+        <div class="form-group">
+            <label for="DateHired">Date Hired</label>
+            <input type="date" class="form-control" id="DateHired" value="@Model.DateHired.ToString("yyyy-MM-dd")" readonly />
+        </div>
+        <div class="form-group">
+            <label for="EmploymentStatus">Status</label>
+            <select class="form-control" id="EmploymentStatus">
+                <option value="true" selected="@(Model.EmploymentStatus)">Active</option>
+                <option value="false" selected="@(!Model.EmploymentStatus)">Inactive</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="ResignationDate">Resignation Date</label>
+            <input type="date" class="form-control" id="ResignationDate" value="@Model.ResignationDate?.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h5>Salary Details</h5>
+        @if (Model.Salaries.Any())
+        {
+            var currentSalary = Model.Salaries.FirstOrDefault(s => s.IsCurrent);
+            if (currentSalary != null)
+            {
+                <div class="form-group">
+                    <label for="MonthlySalary">Monthly Salary</label>
+                    <input type="number" class="form-control" id="MonthlySalary" value="@currentSalary.MonthlySalary" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label for="EffectiveDate">Effective Date</label>
+                    <input type="date" class="form-control" id="EffectiveDate" value="@currentSalary.EffectiveDate.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="form-group">
+                    <label for="IsCurrent">Is Current Salary</label>
+                    <select class="form-control" id="IsCurrent">
+                        <option value="true" selected="@(currentSalary.IsCurrent)">Yes</option>
+                        <option value="false" selected="@(!currentSalary.IsCurrent)">No</option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No current salary record found.</p>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                No salary records found. Add a new salary record below.
+            </div>
+            <div class="form-group">
+                <label for="MonthlySalary">Monthly Salary</label>
+                <input type="number" class="form-control" id="MonthlySalary" step="0.01" />
+            </div>
+            <div class="form-group">
+                <label for="EffectiveDate">Effective Date</label>
+                <input type="date" class="form-control" id="EffectiveDate" />
+            </div>
+            <div class="form-group">
+                <label for="IsCurrent">Is Current Salary</label>
+                <select class="form-control" id="IsCurrent">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h5>Emergency Contact</h5>
+        <div class="form-group">
+            <label for="EmergencyContactName">Name</label>
+            <input type="text" class="form-control" id="EmergencyContactName" value="@Model.EmergencyContactName" />
+        </div>
+        <div class="form-group">
+            <label for="EmergencyContactPhone">Phone</label>
+            <input type="text" class="form-control" id="EmergencyContactPhone" value="@Model.EmergencyContactPhone" />
+        </div>
+        <div class="form-group">
+            <label for="EmergencyContactRelation">Relation</label>
+            <input type="text" class="form-control" id="EmergencyContactRelation" value="@Model.EmergencyContactRelation" />
+        </div>
+    </div>
+</div>

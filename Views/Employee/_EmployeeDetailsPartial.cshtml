@@ -19,6 +19,31 @@
         <p><strong>Resignation Date:</strong> @(Model.ResignationDate?.ToShortDateString() ?? "N/A")</p>
     </div>
 </div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h5>Salary Details</h5>
+        @if (Model.Salaries.Any())
+        {
+            var currentSalary = Model.Salaries.FirstOrDefault(s => s.IsCurrent);
+            if (currentSalary != null)
+            {
+                <p><strong>Monthly Salary:</strong> @currentSalary.MonthlySalary.ToString("C", new System.Globalization.CultureInfo("en-PH"))</p>
+                <p><strong>Effective Date:</strong> @currentSalary.EffectiveDate.ToShortDateString()</p>
+                <p><strong>Status:</strong> @(currentSalary.IsCurrent ? "Current" : "Inactive")</p>
+            }
+            else
+            {
+                <p class="text-muted">No current salary record found.</p>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No salary records found.</p>
+        }
+    </div>
+</div>
+
 <div class="row mt-4">
     <div class="col-md-12">
         <h5>Emergency Contact</h5>
