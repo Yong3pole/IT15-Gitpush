@@ -1,0 +1,35 @@
+﻿INSERT INTO Departments (Name, Description)
+VALUES
+    ('Human Resources', 'Handles employee management and hiring'),
+    ('Finance', 'Manages company financial transactions'),
+    ('Sales & Marketing', 'Focuses on customer acquisition and branding'),
+    ('Operations', 'Oversees production and daily operations'),
+    ('IT & Support', 'Maintains technology infrastructure and support'),
+    ('Customer Service', 'Handles customer inquiries and support');
+
+
+INSERT INTO JobTitles (Name, DepartmentId, Description)
+VALUES
+    -- Human Resources
+    ('HR Manager', 0, 'Oversees HR policies and recruitment'),
+    ('Recruiter', 0, 'Handles hiring and onboarding'),
+
+    -- Finance & Accounting
+    ('Accountant', 1, 'Manages company financial records'),
+    ('Finance Analyst', 1, 'Analyzes financial data and trends'),
+
+    -- Sales & Marketing
+    ('Sales Executive', 2, 'Handles client sales and negotiations'),
+    ('Marketing Coordinator', 2, 'Plans and executes marketing campaigns'),
+
+    -- Operations
+    ('Operations Manager', 3, 'Oversees daily business operations'),
+    ('Logistics Coordinator', 3, 'Manages supply chain and logistics'),
+
+    -- IT & Support
+    ('IT Administrator', 4, 'Maintains IT infrastructure and security'),
+    ('Technical Support Specialist', 4, 'Provides IT support and troubleshooting'),
+
+    -- Customer Service
+    ('Customer Support Representative', 5, 'Assists customers with inquiries and complaints'),
+    ('Call Center Agent', 5, 'Handles inbound and outbound customer calls');

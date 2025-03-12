@@ -1,16 +1,17 @@
-﻿using System.Globalization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.IO;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using IT15_TripoleMedelTijol.Models;
+using IT15_TripoleMedelTijol.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using IT15_TripoleMedelTijol.Models;
-using IT15_TripoleMedelTijol.Data; // Adjust namespace accordingly
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using Microsoft.Extensions.Hosting;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
+    [Authorize(Roles = "HR,Admin")]
     public class WorklogController : Controller
     {
         private readonly ApplicationDbContext _context;

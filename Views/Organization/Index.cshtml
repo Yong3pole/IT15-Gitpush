@@ -22,19 +22,21 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>👤 @job.Name</span>
-                                    @if (job.EmployeeId != null && job.Employee != null)
+                                    @if (job.Employees.Any()) // Check if there are employees assigned
                                     {
                                         <span class="badge bg-success">
-                                            Filled - @job.Employee.FullName
+                                            Filled - @(string.Join(", ", job.Employees.Select(e => e.FullName)))
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-warning">Vacant</span>
                                     }
+
                                 </li>
                             }
                         </ul>
+
                     </div>
                 </div>
             </div>

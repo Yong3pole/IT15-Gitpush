@@ -1,6 +1,25 @@
-﻿@{
+﻿<!-- Views/Home/AdminDashboard -->
+@{
     ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var successMessage = "@TempData["SuccessMessage"]";
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: successMessage,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
 }
 
 <div class="container">

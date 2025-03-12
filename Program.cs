@@ -21,44 +21,65 @@ var app = builder.Build();
 // Middleware setup
 app.UseAuthentication();
 app.UseAuthorization();
-
-// File serving
 app.UseStaticFiles();
-
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
-// 🔹 **Seed User & Reset Password in a Scoped Service**
+// Seed roles and admin user in a scoped service
 using (var scope = app.Services.CreateScope())
 {
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    var user = await userManager.FindByEmailAsync("john.doe@example.com");
-    if (user != null)
+    // Ensure roles exist
+    string[] roles = { "Admin", "HR", "Employee" };
+    foreach (var role in roles)
     {
-        string newPassword = "Admin123!";
-        string hashedPassword = userManager.PasswordHasher.HashPassword(user, newPassword);
-        user.PasswordHash = hashedPassword;
-        await userManager.UpdateAsync(user);
-        Console.WriteLine("✅ Password reset successfully!");
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Ensure admin user exists
+    var adminEmail = "admin@example.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        var newUser = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var createUserResult = await userManager.CreateAsync(newUser, "Admin123!");
+        if (createUserResult.Succeeded)
+        {
+            await userManager.AddToRoleAsync(newUser, "Admin");
+            Console.WriteLine("✅ Admin user created successfully!");
+        }
+        else
+        {
+            Console.WriteLine("❌ Failed to create admin user: " + string.Join(", ", createUserResult.Errors.Select(e => e.Description)));
+        }
     }
     else
     {
-        Console.WriteLine("❌ User not found.");
+        Console.WriteLine("✅ Admin user already exists.");
     }
+
 }
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // Show detailed error pages in development
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error"); // Custom error page for production
+    app.UseExceptionHandler("/Home/Error");
 }
-
-
 
 app.Run();

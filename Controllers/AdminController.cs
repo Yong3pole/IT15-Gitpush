@@ -11,7 +11,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
-    [Authorize(Roles = "HR")]
+    // Allow both HR and Admin roles to access this controller
+    [Authorize(Roles = "HR,Admin")]
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;

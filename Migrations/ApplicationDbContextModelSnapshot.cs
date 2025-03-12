@@ -238,7 +238,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -275,7 +275,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("JobTitleId")
+                    b.Property<int?>("JobTitleId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
@@ -303,7 +303,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ZipCode")
                         .IsRequired()
@@ -318,9 +318,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.HasIndex("EmployeeID")
                         .IsUnique();
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("JobTitleId");
 
                     b.ToTable("Employees");
                 });
@@ -419,9 +417,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmployeeId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool?>("IsFilled")
                         .HasColumnType("bit");
 
@@ -432,10 +427,6 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.HasKey("JobTitleId");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique()
-                        .HasFilter("[EmployeeId] IS NOT NULL");
 
                     b.ToTable("JobTitles");
                 });
@@ -865,17 +856,18 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.HasOne("IT15_TripoleMedelTijol.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("IT15_TripoleMedelTijol.Models.ApplicationUser", null)
-                        .WithOne()
-                        .HasForeignKey("IT15_TripoleMedelTijol.Models.Employee", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("IT15_TripoleMedelTijol.Models.JobTitle", "JobTitle")
+                        .WithMany("Employees")
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Applicant");
 
                     b.Navigation("Department");
+
+                    b.Navigation("JobTitle");
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.EmployeeAttendance", b =>
@@ -894,13 +886,13 @@ namespace IT15_TripoleMedelTijol.Migrations
                     b.HasOne("IT15_TripoleMedelTijol.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("IT15_TripoleMedelTijol.Models.JobTitle", "JobTitle")
                         .WithMany()
                         .HasForeignKey("JobTitleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Department");
@@ -916,14 +908,7 @@ namespace IT15_TripoleMedelTijol.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IT15_TripoleMedelTijol.Models.Employee", "Employee")
-                        .WithOne("JobTitle")
-                        .HasForeignKey("IT15_TripoleMedelTijol.Models.JobTitle", "EmployeeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Department");
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.LeaveBalance", b =>
@@ -1060,15 +1045,17 @@ namespace IT15_TripoleMedelTijol.Migrations
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.Employee", b =>
                 {
-                    b.Navigation("JobTitle")
-                        .IsRequired();
-
                     b.Navigation("Salaries");
                 });
 
             modelBuilder.Entity("IT15_TripoleMedelTijol.Models.JobPosting", b =>
                 {
                     b.Navigation("Applicants");
+                });
+
+            modelBuilder.Entity("IT15_TripoleMedelTijol.Models.JobTitle", b =>
+                {
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

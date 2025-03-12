@@ -21,11 +21,9 @@ namespace IT15_TripoleMedelTijol.Models
         // ✅ Indicates if the position is currently occupied // nullable
         public bool? IsFilled { get; set; } = false;
 
-        // ✅ Stores the EmployeeId of the person filling this job (nullable for multi-employee roles)
-        [ForeignKey("Employee")]
-        public string? EmployeeId { get; set; }
+        //public Employee? Employee { get; set; } // Navigation property
 
-        public Employee? Employee { get; set; } // Navigation property
+        public ICollection<Employee> Employees { get; set; } = new List<Employee>(); // One-to-Many
     }
-
 }
+

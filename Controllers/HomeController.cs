@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
-    [Authorize] // Prevent access if not logged in
+    [Authorize(Roles = "HR,Admin")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,7 +25,7 @@ namespace IT15_TripoleMedelTijol.Controllers
             return View();
         }
 
-        [Authorize(Roles = "HR")] // Only allow admins to access
+        [Authorize(Roles = "HR,Admin")]
         public async Task<IActionResult> AdminDashboard()
         {
             return View();

@@ -59,10 +59,13 @@ namespace IT15_TripoleMedelTijol.Data
                 new LeaveType { LeaveTypeId = 5, Name = "Unpaid Leave", DefaultDays = 0, IsPaid = false }
             );
 
+
+
             // Set EmployeeID as unique to prevent duplicates
             builder.Entity<Employee>()
                 .HasIndex(e => e.EmployeeID)
                 .IsUnique();
+
 
             // Configure the relationship between Employee and Salary
             builder.Entity<Salary>()
@@ -76,31 +79,39 @@ namespace IT15_TripoleMedelTijol.Data
                 .Property(s => s.MonthlySalary)
                 .HasColumnType("decimal(18,2)");
 
-            // Configure one-to-one relationship between Employee and ApplicationUser
             builder.Entity<Employee>()
-                .HasOne<ApplicationUser>() // An Employee is linked to an ApplicationUser (identity user)
-                .WithOne()  // One-to-one relationship
-                .HasForeignKey<Employee>(e => e.UserId) // Employee table holds the UserId as a foreign key
-                .OnDelete(DeleteBehavior.Cascade); // If the user is deleted, delete the corresponding Employee record
+                .HasOne(e => e.JobTitle)
+                .WithMany(j => j.Employees) // specify the navigation property
+                .HasForeignKey(e => e.JobTitleId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            // Configure Employee - Department Relationship
+            builder.Entity<Employee>()
+                .HasOne(e => e.Department)
+                .WithMany()
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.SetNull); // This is fine, departments can cascade delete
+
+            // Other configurations...
             // Configure JobPosting relationship with Department (Many-to-One)
             builder.Entity<JobPosting>()
                 .HasOne(jp => jp.Department) // A JobPosting belongs to one Department
                 .WithMany() // A Department can have multiple JobPostings
-                .HasForeignKey(jp => jp.DepartmentId); // Foreign key in JobPosting table
+                .HasForeignKey(jp => jp.DepartmentId) // Foreign key in JobPosting table
+                .OnDelete(DeleteBehavior.Restrict);  // 🔹 Prevent cascading delete
 
             // Configure JobPosting relationship with JobTitle (Many-to-One)
             builder.Entity<JobPosting>()
                 .HasOne(jp => jp.JobTitle) // A JobPosting belongs to one JobTitle
                 .WithMany() // A JobTitle can have multiple JobPostings
-                .HasForeignKey(jp => jp.JobTitleId); // Foreign key in JobPosting table
+                .HasForeignKey(jp => jp.JobTitleId)// Foreign key in JobPosting table
+                 .OnDelete(DeleteBehavior.Restrict);  // 🔹 Prevent cascading delete
 
             // Configure JobTitle relationship with Employee (One-to-One)
-            builder.Entity<JobTitle>()
-                .HasOne<Employee>(jt => jt.Employee) // A JobTitle is optionally held by one Employee
-                .WithOne(e => e.JobTitle) // An Employee holds one JobTitle
-                .HasForeignKey<JobTitle>(jt => jt.EmployeeId) // JobTitle table has the EmployeeId
-                .OnDelete(DeleteBehavior.SetNull); // If the Employee is deleted, set EmployeeId to NULL in JobTitle (position becomes vacant)
+            //builder.Entity<JobTitle>()
+            //    .HasOne<Employee>(jt => jt.Employee) // A JobTitle is optionally held by one Employee
+            //    .WithOne(e => e.JobTitle) // An Employee holds one JobTitle
+            //    .OnDelete(DeleteBehavior.SetNull); // If the Employee is deleted, set EmployeeId to NULL in JobTitle (position becomes vacant)
 
         }
     }

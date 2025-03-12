@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
+    [Authorize(Roles = "HR,Admin")]
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _context; // Inject DB Context

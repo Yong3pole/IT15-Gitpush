@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
+    [Authorize(Roles = "HR,Admin")]
     public class OrganizationController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,7 +25,7 @@ namespace IT15_TripoleMedelTijol.Controllers
         {
             var departments = _context.Departments
                 .Include(d => d.JobTitles)
-                .ThenInclude(j => j.Employee)
+                .ThenInclude(j => j.Employees)
                 .ToList();
 
             return View(departments);

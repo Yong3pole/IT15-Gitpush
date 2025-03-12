@@ -65,12 +65,12 @@ namespace IT15_TripoleMedelTijol.Models
 
         // Job Details
         [ForeignKey("JobTitle")]
-        public int JobTitleId { get; set; }
+        public int? JobTitleId { get; set; }
 
         public required JobTitle JobTitle { get; set; }
 
         [ForeignKey("Department")]
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
 
         public required Department Department { get; set; }
 

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
+    [Authorize(Roles = "HR,Admin")]
     public class OnboardingController : Controller
     {
         public IActionResult OnboardingLandingPage()

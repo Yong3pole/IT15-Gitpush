@@ -1,5 +1,6 @@
 ﻿using IT15_TripoleMedelTijol.Data;
 using IT15_TripoleMedelTijol.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
+    [Authorize(Roles = "HR,Admin")]
     public class PTOController : Controller
     {
         private readonly ApplicationDbContext _context;

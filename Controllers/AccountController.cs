@@ -27,29 +27,38 @@ namespace IT15_TripoleMedelTijol.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["ErrorMessage"] = "Invalid login attempt.";
                 return View(model);
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
-            {
-                // Check if the user has the HR role before allowing login
-                if (!await _userManager.IsInRoleAsync(user, "HR"))
-                {
-                    ModelState.AddModelError("", "Access Denied. Only HR personnel can log in.");
-                    return View(model);
-                }
 
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("AdminDashboard", "Home"); // HR Dashboard
-                }
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                TempData["ErrorMessage"] = "Invalid Email or Password.";
+                return View(model);
             }
 
-            ModelState.AddModelError("", "Invalid Email or Password.");
-            return View(model);
+            // Check if user has HR or Admin role
+            if (!await _userManager.IsInRoleAsync(user, "HR") && !await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                TempData["ErrorMessage"] = "Access Denied. Only HR personnel or Admins can log in.";
+                return View(model);
+            }
+
+            // Sign in user
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = "Invalid Email or Password.";
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Login successful!";
+            return RedirectToAction("AdminDashboard", "Home");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Logout()

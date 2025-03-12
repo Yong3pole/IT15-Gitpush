@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "HR,Admin")]
     public class AttendanceController : Controller
     {
         private readonly ApplicationDbContext _context;
