@@ -3,6 +3,14 @@ https://it15-webapp-dqbmc6avdchbfyec.scm.canadacentral-01.azurewebsites.net/Debu
 C:\home\site\wwwroot
 dotnet IT15-TripoleMedelTijol.dll
 
+dotnet publish -c Release -o ./publish
+zip -r publish.zip ./publish 
+or Compress-Archive -Path .\publish\* -DestinationPath publish.zip
+az webapp deployment source config-zip --resource-group DefaultResourceGroup-SEA --name IT15-WebApp --src publish.zip
+
+it15-webapp-dqbmc6avdchbfyec.canadacentral-01.azurewebsites.net
+
+
 INSERT INTO Departments (Name, Description)
 VALUES
     ('Human Resources', 'Handles employee management and hiring'),
