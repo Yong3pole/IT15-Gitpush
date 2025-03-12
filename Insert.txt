@@ -1,4 +1,9 @@
-﻿INSERT INTO Departments (Name, Description)
+
+https://it15-webapp-dqbmc6avdchbfyec.scm.canadacentral-01.azurewebsites.net/DebugConsole
+C:\home\site\wwwroot
+dotnet IT15-TripoleMedelTijol.dll
+
+INSERT INTO Departments (Name, Description)
 VALUES
     ('Human Resources', 'Handles employee management and hiring'),
     ('Finance', 'Manages company financial transactions'),
