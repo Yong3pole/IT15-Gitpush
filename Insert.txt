@@ -10,7 +10,9 @@ VALUES
     ('Sales & Marketing', 'Focuses on customer acquisition and branding'),
     ('Operations', 'Oversees production and daily operations'),
     ('IT & Support', 'Maintains technology infrastructure and support'),
-    ('Customer Service', 'Handles customer inquiries and support');
+    ('Customer Service', 'Handles customer inquiries and support'),
+    ('Management', 'Oversees company-wide operations and strategy');
+    
 
 
 INSERT INTO JobTitles (Name, DepartmentId, Description)
@@ -37,4 +39,6 @@ VALUES
 
     -- Customer Service
     ('Customer Support Representative', 5, 'Assists customers with inquiries and complaints'),
-    ('Call Center Agent', 5, 'Handles inbound and outbound customer calls');
+    ('Call Center Agent', 5, 'Handles inbound and outbound customer calls'),
+
+    ('Supervisor', 6, 'Oversees teams and ensures work efficiency');
