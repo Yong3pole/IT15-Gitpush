@@ -18,27 +18,27 @@ VALUES
 INSERT INTO JobTitles (Name, DepartmentId, Description)
 VALUES
     -- Human Resources
-    ('HR Manager', 0, 'Oversees HR policies and recruitment'),
-    ('Recruiter', 0, 'Handles hiring and onboarding'),
+    ('HR Manager', 1, 'Oversees HR policies and recruitment'),
+    ('Recruiter', 1, 'Handles hiring and onboarding'),
 
     -- Finance & Accounting
-    ('Accountant', 1, 'Manages company financial records'),
-    ('Finance Analyst', 1, 'Analyzes financial data and trends'),
+    ('Accountant', 2, 'Manages company financial records'),
+    ('Finance Analyst', 2, 'Analyzes financial data and trends'),
 
     -- Sales & Marketing
-    ('Sales Executive', 2, 'Handles client sales and negotiations'),
-    ('Marketing Coordinator', 2, 'Plans and executes marketing campaigns'),
+    ('Sales Executive', 3, 'Handles client sales and negotiations'),
+    ('Marketing Coordinator', 3, 'Plans and executes marketing campaigns'),
 
     -- Operations
-    ('Operations Manager', 3, 'Oversees daily business operations'),
-    ('Logistics Coordinator', 3, 'Manages supply chain and logistics'),
+    ('Operations Manager', 4, 'Oversees daily business operations'),
+    ('Logistics Coordinator', 4, 'Manages supply chain and logistics'),
 
     -- IT & Support
-    ('IT Administrator', 4, 'Maintains IT infrastructure and security'),
-    ('Technical Support Specialist', 4, 'Provides IT support and troubleshooting'),
+    ('IT Administrator', 5, 'Maintains IT infrastructure and security'),
+    ('Technical Support Specialist', 5, 'Provides IT support and troubleshooting'),
 
     -- Customer Service
-    ('Customer Support Representative', 5, 'Assists customers with inquiries and complaints'),
-    ('Call Center Agent', 5, 'Handles inbound and outbound customer calls'),
+    ('Customer Support Representative', 6, 'Assists customers with inquiries and complaints'),
+    ('Call Center Agent', 6, 'Handles inbound and outbound customer calls'),
 
-    ('Supervisor', 6, 'Oversees teams and ensures work efficiency');
+    ('Supervisor', 7, 'Oversees teams and ensures work efficiency');
