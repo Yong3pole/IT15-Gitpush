@@ -1,0 +1,4 @@
+EmployeeID,Date,ClockIn,ClockOut,Status
+623c1b42-f92e-4544-bb29-a9f7af615162,13/03/2025,08:00,17:00,Present
+a61ffe61-37f1-4473-aeb3-582467bb8cb7,13/03/2025,08:15,17:00,Late
+
