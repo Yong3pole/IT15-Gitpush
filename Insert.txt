@@ -3,6 +3,8 @@ https://it15-webapp-dqbmc6avdchbfyec.scm.canadacentral-01.azurewebsites.net/Debu
 C:\home\site\wwwroot
 dotnet IT15-TripoleMedelTijol.dll
 
+C:\Users\tripo\OneDrive\Documents\IT15-Gitpush
+
 dotnet publish -c Release -o ./publish
 zip -r publish.zip ./publish 
 or Compress-Archive -Path .\publish\* -DestinationPath publish.zip
