@@ -145,37 +145,39 @@
     <!-- Include DataTables JS -->
     <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    @if (SignInManager.IsSignedIn(User))
+    @if (User.Identity.IsAuthenticated && !Context.Request.Path.StartsWithSegments("/Account"))
     {
         <script>
-            const warningTime = 10 * 1000;
-            const logoutTime = 20 * 1000;
+            document.addEventListener("DOMContentLoaded", function () {
+                const warningTime = 10 * 1000; // 10 seconds
+                const logoutTime = 20 * 1000;  // 20 seconds
 
-            let warningTimer = setTimeout(showWarning, warningTime);
-            let logoutTimer = setTimeout(doLogout, logoutTime);
+                let warningTimer = setTimeout(showWarning, warningTime);
+                let logoutTimer = setTimeout(doLogout, logoutTime);
 
-            function resetTimers() {
-                clearTimeout(warningTimer);
-                clearTimeout(logoutTimer);
-                warningTimer = setTimeout(showWarning, warningTime);
-                logoutTimer = setTimeout(doLogout, logoutTime);
-            }
-
-            function showWarning() {
-                if (confirm("You’ve been idle for 10 seconds. Stay signed in?")) {
-                    resetTimers();
+                function resetTimers() {
+                    clearTimeout(warningTimer);
+                    clearTimeout(logoutTimer);
+                    warningTimer = setTimeout(showWarning, warningTime);
+                    logoutTimer = setTimeout(doLogout, logoutTime);
                 }
-            }
 
-            function doLogout() {
-                window.location.href = '/Account/Logout';
-            }
+                function showWarning() {
+                    if (confirm("You’ve been idle for 10 seconds. Stay signed in?")) {
+                        resetTimers();
+                    }
+                }
 
-            ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt =>
-                window.addEventListener(evt, resetTimers)
-            );
+                function doLogout() {
+                    window.location.href = '/Account/Logout';
+                }
+
+                const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'input', 'touchstart'];
+                activityEvents.forEach(evt => window.addEventListener(evt, resetTimers));
+            });
         </script>
     }
+
 
     @RenderSection("Scripts", required: false)
 

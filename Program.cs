@@ -59,7 +59,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 
     options.ExpireTimeSpan = TimeSpan.FromSeconds(20); // ⏱️ 20 seconds for testing
-    options.SlidingExpiration = false;
+    options.SlidingExpiration = true;
 });
 
 builder.Services.AddSession(options =>
@@ -149,4 +149,4 @@ async Task SeedRolesAndAdminUserAsync(WebApplication app)
     }
 }
 
-app.Run();
+app.Run("http://0.0.0.0:5238");
