@@ -10,9 +10,37 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // 🔹 Register Identity
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+//    .AddRoles<IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+
+    // ✅ Lockout configuration
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // lockout duration
+    options.Lockout.MaxFailedAccessAttempts = 3;                      // allowed failed logins
+    options.Lockout.AllowedForNewUsers = true;
+
+    // (Optional) Password rules
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireLowercase = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+
+// ✅ Add this block right after
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; // or whatever your login page is
+    options.AccessDeniedPath = "/Account/AccessDenied"; // optional
+});
 
 // 🔹 Register HttpClient for dependency injection
 builder.Services.AddHttpClient();
@@ -23,6 +51,25 @@ builder.Services.AddSession();
 // 🔹 Register MVC
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// IDLE TIMER, LOG OFF WHEN IDLE
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+
+    options.ExpireTimeSpan = TimeSpan.FromSeconds(20); // ⏱️ 20 seconds for testing
+    options.SlidingExpiration = false;
+});
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(20);  // ⏱️ 20 seconds
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+
 
 var app = builder.Build();
 

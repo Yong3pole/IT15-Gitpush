@@ -289,7 +289,5 @@ namespace IT15_TripoleMedelTijol.Controllers
             }
         }
 
-        
-
     }
 }

@@ -13,6 +13,7 @@ using System;
 
 namespace IT15_TripoleMedelTijol.Controllers
 {
+
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -48,35 +49,54 @@ namespace IT15_TripoleMedelTijol.Controllers
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user == null)
             {
+                // Simulate delay and failure to prevent user enumeration
+                await Task.Delay(500);
                 TempData["ErrorMessage"] = "Invalid Email or Password.";
                 return View(model);
             }
 
-            // ✅ Check if user has HR or Admin role
+            // ✅ Check if user is locked out
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                TempData["ErrorMessage"] = "Your account is temporarily locked due to multiple failed login attempts. Please try again later.";
+                return View(model);
+            }
+
+            // ✅ Check password
+            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                await _userManager.AccessFailedAsync(user); // Track failed attempt
+                TempData["ErrorMessage"] = "Invalid Email or Password.";
+                return View(model);
+            }
+
+            // ✅ Password correct: Reset failed count
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            // ✅ Check role
             if (!await _userManager.IsInRoleAsync(user, "HR") && !await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 TempData["ErrorMessage"] = "Access Denied. Only HR personnel or Admins can log in.";
                 return View(model);
             }
 
-            // ✅ Check last OTP request timestamp (Prevent multiple OTP requests)
-            var lastOtpTimeStr = HttpContext.Session.GetString("LastOtpTime");
+            // ✅ Check OTP cooldown
+            var lastOtpTimeStr = HttpContext.Session.GetString("LoginOtpTime");
             if (lastOtpTimeStr != null && DateTime.TryParse(lastOtpTimeStr, out var lastOtpTime))
             {
-                if ((DateTime.UtcNow - lastOtpTime).TotalSeconds < 60) // Prevent OTP request within 60 sec
+                if ((DateTime.UtcNow - lastOtpTime).TotalSeconds < 60)
                 {
                     TempData["ErrorMessage"] = "OTP already sent. Please wait before requesting a new one.";
                     return View(model);
                 }
             }
 
-            // ✅ Generate a secure OTP
+            // ✅ Generate OTP
             var otp = GenerateSecureOtp();
-
-            // ✅ Send OTP via SMS
             var phoneNumber = user.PhoneNumber;
+
             var sendData = new
             {
                 sender_id = "PhilSMS",
@@ -84,15 +104,12 @@ namespace IT15_TripoleMedelTijol.Controllers
                 message = $"Your OTP for login is: {otp}"
             };
 
-            var token = "1179|EkuFgMmv7JYBgb0qwf5ZD6kZWKrvuqFyGHGb9g04"; // Replace with your actual token
+            var token = "1179|EkuFgMmv7JYBgb0qwf5ZD6kZWKrvuqFyGHGb9g04";
             var content = new StringContent(JsonConvert.SerializeObject(sendData), Encoding.UTF8, "application/json");
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://app.philsms.com/api/v3/sms/send")
             {
-                Headers =
-                {
-                    { "Authorization", $"Bearer {token}" }
-                },
+                Headers = { { "Authorization", $"Bearer {token}" } },
                 Content = content
             };
 
@@ -105,13 +122,14 @@ namespace IT15_TripoleMedelTijol.Controllers
                 return View(model);
             }
 
-            // ✅ Store OTP, email, and request time for verification
+            // ✅ Store OTP and info
             HttpContext.Session.SetString("Otp", otp);
             HttpContext.Session.SetString("UserEmail", user.Email);
-            HttpContext.Session.SetString("LastOtpTime", DateTime.UtcNow.ToString()); // Save timestamp
+            HttpContext.Session.SetString("LoginOtpTime", DateTime.UtcNow.ToString());
 
             return RedirectToAction("VerifyOtp");
         }
+
 
         [HttpGet]
         public IActionResult VerifyOtp()
@@ -142,7 +160,9 @@ namespace IT15_TripoleMedelTijol.Controllers
 
             HttpContext.Session.Remove("Otp");
             HttpContext.Session.Remove("UserEmail");
-            HttpContext.Session.Remove("LastOtpTime"); // Remove OTP request time
+            HttpContext.Session.Remove("LoginOtpTime"); // Only clear login-related keys
+            HttpContext.Session.Remove("ResetOtpTime"); // Clear reset if needed too
+
 
             TempData["SuccessMessage"] = "Login successful!";
             return RedirectToAction("AdminDashboard", "Home");
@@ -218,5 +238,140 @@ namespace IT15_TripoleMedelTijol.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View(); // You can create a simple view to show "Access Denied"
+        }
+
+
+        // Forgot Password View
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, string OtpCode)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Email not found.";
+                return View(model);
+            }
+
+            // ✅ If OTP input is empty, send OTP
+            if (string.IsNullOrEmpty(OtpCode))
+            {
+                var otp = GenerateSecureOtp();
+                var phoneNumber = user.PhoneNumber;
+
+                var sendData = new
+                {
+                    sender_id = "PhilSMS",
+                    recipient = phoneNumber,
+                    message = $"Your OTP for password reset is: {otp}"
+                };
+
+                var token = "1179|EkuFgMmv7JYBgb0qwf5ZD6kZWKrvuqFyGHGb9g04";
+                var content = new StringContent(JsonConvert.SerializeObject(sendData), Encoding.UTF8, "application/json");
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://app.philsms.com/api/v3/sms/send")
+                {
+                    Headers = { { "Authorization", $"Bearer {token}" } },
+                    Content = content
+                };
+
+                var response = await _httpClient.SendAsync(requestMessage);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorDetails = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("❌ Failed to send OTP. API Response: {ErrorDetails}", errorDetails);
+                    TempData["ErrorMessage"] = "Failed to send OTP. Please try again.";
+                    return View(model);
+                }
+
+                HttpContext.Session.SetString("Otp", otp);
+                HttpContext.Session.SetString("UserEmail", user.Email);
+                HttpContext.Session.SetString("ResetOtpTime", DateTime.UtcNow.ToString());
+
+                TempData["OtpSent"] = true;
+                TempData["SuccessMessage"] = "OTP sent successfully. Please check your phone.";
+
+                return View(model);
+            }
+            else
+            {
+                // ✅ If OTP input is provided, verify it
+                var expectedOtp = HttpContext.Session.GetString("Otp");
+                var emailFromSession = HttpContext.Session.GetString("UserEmail");
+
+                if (OtpCode == expectedOtp && model.Email == emailFromSession)
+                {
+                    TempData["SuccessMessageOTPVerified"] = "OTP verified.";
+                    return RedirectToAction("ResetPassword", new { email = model.Email });
+                }
+
+                TempData["OtpSent"] = true; // keep showing OTP input
+                TempData["ErrorMessage"] = "Invalid OTP. Please try again.";
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["ErrorMessage"] = "Invalid reset link.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            var model = new ResetPasswordViewModel { Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessResetMessage"] = "Password reset successfully!";
+                return RedirectToAction("Login");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+
+
+
     }
 }
