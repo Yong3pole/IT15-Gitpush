@@ -21,14 +21,14 @@ VALUES
 
 INSERT INTO JobTitles (Name, Description, DepartmentId)  
 VALUES  
-('HR Manager', 'Oversees human resources policies and staff management.', 0),  
-('Finance Analyst', 'Analyzes financial data and prepares reports.', 0),  
-('Software Engineer', 'Develops and maintains software applications.', 0),  
-('Marketing Specialist', 'Plans and executes marketing campaigns.', 0),  
-('Sales Executive', 'Drives sales and builds client relationships.', 0),  
-('Operations Manager', 'Ensures smooth day-to-day business operations.', 0),  
-('Customer Support Representative', 'Assists customers with inquiries and issues.', 0),  
-('R&D Engineer', 'Conducts research and develops new products.', 0);  
+('HR Manager', 'Oversees human resources policies and staff management.', 1),  
+('Finance Analyst', 'Analyzes financial data and prepares reports.', 2),  
+('Software Engineer', 'Develops and maintains software applications.', 3),  
+('Marketing Specialist', 'Plans and executes marketing campaigns.', 4),  
+('Sales Executive', 'Drives sales and builds client relationships.', 5),  
+('Operations Manager', 'Ensures smooth day-to-day business operations.', 6),  
+('Customer Support Representative', 'Assists customers with inquiries and issues.', 7),  
+('R&D Engineer', 'Conducts research and develops new products.', 8);  
 
 ----------- RESET AUTO INCREMENT -------------
 
